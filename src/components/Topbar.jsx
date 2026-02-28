@@ -1,27 +1,34 @@
 import { FiSearch, FiBell, FiMenu } from "react-icons/fi"
 
-const Topbar = () => {
+const Topbar = ({ openSidebar }) => {
   return (
-    <div className="h-16 bg-white shadow flex items-center justify-between px-6">
+    <div className="h-16 bg-white shadow flex items-center justify-between px-4 sm:px-6">
 
       {/* LEFT SIDE */}
-      <div className="flex items-center gap-4 w-1/2">
+      <div className="flex items-center gap-3 w-full md:w-1/2">
 
-        <FiMenu className="text-gray-600 cursor-pointer" size={20} />
+        {/* Mobile Menu Button */}
+        <FiMenu
+          className="text-gray-600 cursor-pointer md:hidden"
+          size={22}
+          onClick={openSidebar}
+        />
 
+        {/* Search */}
         <div className="relative w-full">
           <FiSearch className="absolute left-3 top-3 text-gray-400" />
           <input
             type="text"
             placeholder="Search anything..."
-            className="w-full pl-10 pr-4 py-2 rounded-lg bg-gray-100 focus:outline-none focus:ring-2 focus:ring-secondary"
+            className="w-full pl-10 pr-4 py-2 rounded-lg bg-gray-100
+            focus:outline-none focus:ring-2 focus:ring-secondary"
           />
         </div>
 
       </div>
 
       {/* RIGHT SIDE */}
-      <div className="flex items-center gap-6">
+      <div className="hidden sm:flex items-center gap-6">
 
         {/* Notification */}
         <div className="relative cursor-pointer">
