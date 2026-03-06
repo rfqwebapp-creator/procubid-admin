@@ -6,8 +6,6 @@ const Users = () => {
   const [activeTab, setActiveTab] = useState("users")
   const [search, setSearch] = useState("")
 
-  /* ================= USERS DATA ================= */
-
   const users = [
     {
       name: "John Mitchell",
@@ -43,8 +41,6 @@ const Users = () => {
     }
   ]
 
-  /* ================= ROLE DATA ================= */
-
   const roles = [
     {
       name: "Admin",
@@ -66,8 +62,6 @@ const Users = () => {
     }
   ]
 
-  /* ================= PERMISSIONS DATA ================= */
-
   const permissions = [
     { name: "create_tender", module: "Tender", roles: ["Admin", "Buyer"] },
     { name: "submit_bid", module: "Tender", roles: ["Admin", "Supplier"] },
@@ -78,8 +72,6 @@ const Users = () => {
     { name: "approve_po", module: "Purchase Order", roles: [] },
     { name: "manage_workflows", module: "Workflow", roles: [] }
   ]
-
-  /* ================= HELPERS ================= */
 
   const getRoleColor = (role) => {
     if (role === "Admin") return "bg-teal-100 text-teal-700"
@@ -97,23 +89,23 @@ const Users = () => {
   )
 
   return (
-    <div>
+    <div className="w-full">
 
       {/* HEADER */}
       <div className="mb-6">
-        <h1 className="text-2xl font-bold text-primary">
+        <h1 className="text-xl sm:text-2xl font-bold text-primary">
           Users & Roles
         </h1>
-        <p className="text-gray-500">
-          Manage user accounts, assign roles and configure permissions (RBAC)
+        <p className="text-sm sm:text-base text-gray-500">
+          Manage user accounts, assign roles and configure permissions
         </p>
       </div>
 
       {/* TABS */}
-      <div className="flex gap-2 mb-6 bg-gray-100 p-1 rounded-lg w-fit">
+      <div className="flex flex-wrap gap-2 mb-6 bg-gray-100 p-1 rounded-lg w-fit">
         <button
           onClick={() => setActiveTab("users")}
-          className={`px-4 py-2 rounded-md text-sm ${
+          className={`px-3 sm:px-4 py-2 text-sm rounded-md ${
             activeTab === "users"
               ? "bg-white shadow text-primary"
               : "text-gray-500"
@@ -124,7 +116,7 @@ const Users = () => {
 
         <button
           onClick={() => setActiveTab("roles")}
-          className={`px-4 py-2 rounded-md text-sm ${
+          className={`px-3 sm:px-4 py-2 text-sm rounded-md ${
             activeTab === "roles"
               ? "bg-white shadow text-primary"
               : "text-gray-500"
@@ -135,7 +127,7 @@ const Users = () => {
 
         <button
           onClick={() => setActiveTab("permissions")}
-          className={`px-4 py-2 rounded-md text-sm ${
+          className={`px-3 sm:px-4 py-2 text-sm rounded-md ${
             activeTab === "permissions"
               ? "bg-white shadow text-primary"
               : "text-gray-500"
@@ -145,11 +137,13 @@ const Users = () => {
         </button>
       </div>
 
-      {/* ================= USERS TAB ================= */}
+      {/* USERS TAB */}
       {activeTab === "users" && (
         <>
-          <div className="relative w-96 mb-6">
+          {/* SEARCH */}
+          <div className="relative w-full sm:w-96 mb-6">
             <FiSearch className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
+
             <input
               type="text"
               placeholder="Search users..."
@@ -159,8 +153,11 @@ const Users = () => {
             />
           </div>
 
-          <div className="bg-white rounded-xl shadow-sm overflow-hidden">
-            <table className="w-full">
+          {/* TABLE */}
+          <div className="bg-white rounded-xl shadow-sm overflow-x-auto">
+
+            <table className="min-w-[700px] w-full">
+
               <thead className="bg-gray-50 text-gray-600 text-sm">
                 <tr className="text-left">
                   <th className="p-4">User</th>
@@ -171,18 +168,23 @@ const Users = () => {
                   <th></th>
                 </tr>
               </thead>
+
               <tbody>
                 {filteredUsers.map((user, i) => (
                   <tr key={i} className="border-t hover:bg-gray-50">
+
                     <td className="p-4">
                       <div className="flex items-center gap-3">
+
                         <div className="w-10 h-10 rounded-full bg-gray-200 flex items-center justify-center">
                           {user.name[0]}
                         </div>
+
                         <div>
                           <p className="font-medium">{user.name}</p>
                           <p className="text-sm text-gray-500">{user.email}</p>
                         </div>
+
                       </div>
                     </td>
 
@@ -209,50 +211,51 @@ const Users = () => {
                     <td className="p-4">
                       <FiMoreHorizontal className="text-gray-500 cursor-pointer" />
                     </td>
+
                   </tr>
                 ))}
               </tbody>
+
             </table>
+
           </div>
         </>
       )}
 
-      {/* ================= ROLE MANAGEMENT TAB ================= */}
+      {/* ROLE TAB */}
       {activeTab === "roles" && (
-        <div className="bg-white rounded-xl shadow-sm overflow-hidden">
-          <table className="w-full">
+
+        <div className="bg-white rounded-xl shadow-sm overflow-x-auto">
+
+          <table className="min-w-[800px] w-full">
+
             <thead className="bg-gray-50 text-gray-600 text-sm">
               <tr className="text-left">
-                <th className="p-4">Role Name</th>
+                <th className="p-4">Role</th>
                 <th className="p-4">Description</th>
-                <th className="p-4">Module Access</th>
+                <th className="p-4">Module</th>
                 <th className="p-4">Permissions</th>
                 <th className="p-4 text-center">Edit</th>
                 <th className="p-4 text-center">Delete</th>
               </tr>
             </thead>
+
             <tbody>
               {roles.map((role, i) => (
-                <tr key={i} className="border-t hover:bg-gray-50 align-middle">
+                <tr key={i} className="border-t hover:bg-gray-50">
 
-                  <td className="p-4 font-medium whitespace-nowrap">
-                    {role.name}
-                  </td>
+                  <td className="p-4 font-medium">{role.name}</td>
 
-                  <td className="p-4 text-gray-600">
-                    {role.description}
-                  </td>
+                  <td className="p-4 text-gray-600">{role.description}</td>
 
-                  <td className="p-4 whitespace-nowrap">
-                    {role.module}
-                  </td>
+                  <td className="p-4">{role.module}</td>
 
                   <td className="p-4">
                     <div className="flex flex-wrap gap-2">
                       {role.permissions.map((perm, idx) => (
                         <span
                           key={idx}
-                          className="bg-gray-100 px-2 py-1 rounded text-xs whitespace-nowrap"
+                          className="bg-gray-100 px-2 py-1 rounded text-xs"
                         >
                           {perm}
                         </span>
@@ -261,42 +264,45 @@ const Users = () => {
                   </td>
 
                   <td className="p-4 text-center">
-                    <button className="flex items-center justify-center gap-1 text-blue-600 hover:underline">
-                      <FiEdit2 size={14} />
-                      Edit
-                    </button>
+                    <FiEdit2 className="text-blue-600 cursor-pointer" />
                   </td>
 
                   <td className="p-4 text-center">
-                    <button className="flex items-center justify-center gap-1 text-red-600 hover:underline">
-                      <FiTrash2 size={14} />
-                      Remove
-                    </button>
+                    <FiTrash2 className="text-red-600 cursor-pointer" />
                   </td>
 
                 </tr>
               ))}
             </tbody>
+
           </table>
+
         </div>
       )}
 
-      {/* ================= PERMISSIONS TAB ================= */}
+      {/* PERMISSIONS TAB */}
       {activeTab === "permissions" && (
-        <div className="bg-white rounded-xl shadow-sm overflow-hidden">
-          <table className="w-full">
+
+        <div className="bg-white rounded-xl shadow-sm overflow-x-auto">
+
+          <table className="min-w-[700px] w-full">
+
             <thead className="bg-gray-50 text-gray-600 text-sm">
               <tr className="text-left">
-                <th className="p-4">Permission Name</th>
+                <th className="p-4">Permission</th>
                 <th className="p-4">Module</th>
                 <th className="p-4">Assigned Roles</th>
               </tr>
             </thead>
+
             <tbody>
               {permissions.map((perm, i) => (
                 <tr key={i} className="border-t hover:bg-gray-50">
+
                   <td className="p-4 font-mono">{perm.name}</td>
+
                   <td className="p-4 text-gray-600">{perm.module}</td>
+
                   <td className="p-4 flex gap-2 flex-wrap">
                     {perm.roles.map((role, idx) => (
                       <span
@@ -307,11 +313,15 @@ const Users = () => {
                       </span>
                     ))}
                   </td>
+
                 </tr>
               ))}
             </tbody>
+
           </table>
+
         </div>
+
       )}
 
     </div>
