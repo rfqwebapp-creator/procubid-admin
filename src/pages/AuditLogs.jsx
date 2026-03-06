@@ -1,11 +1,5 @@
 import { useState } from "react"
-import {
-  FiSearch,
-  FiCheckCircle,
-  FiShield,
-  FiAlertTriangle,
-  FiFileText
-} from "react-icons/fi"
+import { FiSearch } from "react-icons/fi"
 
 const ComplianceAudit = () => {
 
@@ -106,59 +100,13 @@ const ComplianceAudit = () => {
   return (
     <div className="p-6">
 
-      {/* ================= HEADER ================= */}
-      <div className="mb-8">
-        <h1 className="text-2xl font-bold text-primary">
-          Compliance & Audit
-        </h1>
-        <p className="text-gray-500">
-          Full audit trail — no record deletion, all status changes logged, all transactions traceable
-        </p>
-      </div>
-
-      {/* ================= STATS CARDS ================= */}
-      <div className="grid grid-cols-4 gap-6 mb-10">
-
-        <div className="bg-white p-6 rounded-xl border shadow-sm flex items-center gap-4">
-          <FiCheckCircle className="text-green-500 text-3xl" />
-          <div>
-            <h2 className="text-xl font-bold">98.5%</h2>
-            <p className="text-gray-500 text-sm">Compliance Score</p>
-          </div>
-        </div>
-
-        <div className="bg-white p-6 rounded-xl border shadow-sm flex items-center gap-4">
-          <FiShield className="text-primary text-3xl" />
-          <div>
-            <h2 className="text-xl font-bold">8</h2>
-            <p className="text-gray-500 text-sm">Audit Events</p>
-          </div>
-        </div>
-
-        <div className="bg-white p-6 rounded-xl border shadow-sm flex items-center gap-4">
-          <FiAlertTriangle className="text-yellow-500 text-3xl" />
-          <div>
-            <h2 className="text-xl font-bold">3</h2>
-            <p className="text-gray-500 text-sm">Open Violations</p>
-          </div>
-        </div>
-
-        <div className="bg-white p-6 rounded-xl border shadow-sm flex items-center gap-4">
-          <FiFileText className="text-blue-500 text-3xl" />
-          <div>
-            <h2 className="text-xl font-bold">12</h2>
-            <p className="text-gray-500 text-sm">Reports Generated</p>
-          </div>
-        </div>
-
-      </div>
-
-      {/* ================= AUDIT TRAIL ================= */}
-      <h2 className="text-lg font-semibold mb-4">Audit Trail</h2>
+      {/* HEADER */}
+      <h2 className="text-xl font-semibold mb-6">Audit Trail</h2>
 
       {/* FILTER BAR */}
       <div className="flex gap-4 mb-6">
 
+        {/* SEARCH */}
         <div className="relative w-96">
           <FiSearch className="absolute left-3 top-3 text-gray-400" />
           <input
@@ -170,23 +118,25 @@ const ComplianceAudit = () => {
           />
         </div>
 
+        {/* MODULE FILTER */}
         <select
           value={selectedModule}
           onChange={(e) => setSelectedModule(e.target.value)}
           className="px-4 py-2 border rounded-lg"
         >
-          {modules.map((m, i) => (
-            <option key={i} value={m}>{m}</option>
+          {modules.map((m, index) => (
+            <option key={index} value={m}>{m}</option>
           ))}
         </select>
 
+        {/* ACTION FILTER */}
         <select
           value={selectedAction}
           onChange={(e) => setSelectedAction(e.target.value)}
           className="px-4 py-2 border rounded-lg"
         >
-          {actions.map((a, i) => (
-            <option key={i} value={a}>{a}</option>
+          {actions.map((a, index) => (
+            <option key={index} value={a}>{a}</option>
           ))}
         </select>
 
@@ -211,20 +161,25 @@ const ComplianceAudit = () => {
             {filteredLogs.length > 0 ? (
               filteredLogs.map((log, index) => (
                 <tr key={index} className="border-t hover:bg-gray-50">
+
                   <td className="p-4 text-gray-600">{log.user}</td>
                   <td className="p-4 font-medium">{log.action}</td>
+
                   <td className="p-4">
                     <span className="bg-gray-100 px-3 py-1 rounded-md text-sm">
                       {log.module}
                     </span>
                   </td>
+
                   <td className="p-4 text-gray-500">{log.date}</td>
                   <td className="p-4 text-gray-500">{log.ip}</td>
+
                   <td className="p-4">
                     <span className={`px-3 py-1 text-xs rounded-full ${severityBadge(log.severity)}`}>
                       {log.severity}
                     </span>
                   </td>
+
                 </tr>
               ))
             ) : (
