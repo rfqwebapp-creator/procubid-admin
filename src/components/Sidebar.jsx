@@ -8,14 +8,15 @@ import {
   FiShield,
   FiClipboard,
   FiLayers,
-  FiLogOut
+  FiLogOut,
+  FiUserCheck
 } from "react-icons/fi"
 
 import logo from "../assets/logo.jpg"
 
 const Sidebar = ({ closeSidebar }) => {
   return (
-    <div className="w-60 bg-primary text-white h-full min-h-screen flex flex-col px-5 py-6">
+    <div className="w-64 bg-primary text-white h-screen flex flex-col px-5 py-6 overflow-y-auto">
 
       {/* LOGO */}
       <div className="flex items-center gap-3 mb-10">
@@ -101,6 +102,22 @@ const Sidebar = ({ closeSidebar }) => {
         >
           <FiDollarSign size={18} />
           Pricing
+        </NavLink>
+
+        {/* NEW EMPLOYEE SECTION */}
+
+        <NavLink
+          to="/employees"
+          onClick={closeSidebar}
+          className={({ isActive }) =>
+            `flex items-center gap-3 px-3 py-2 rounded-lg transition
+            ${isActive
+              ? "bg-secondary text-dark font-medium"
+              : "hover:bg-secondary hover:text-dark"}`
+          }
+        >
+          <FiUserCheck size={18} />
+          Employee Details
         </NavLink>
 
       </nav>

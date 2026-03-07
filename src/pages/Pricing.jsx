@@ -1,5 +1,5 @@
 import { useState } from "react"
-import { FiPercent, FiPlus, FiEdit } from "react-icons/fi"
+import { FiPercent, FiPlus, FiEdit, FiTag } from "react-icons/fi"
 
 const Pricing = () => {
 
@@ -53,6 +53,36 @@ const Pricing = () => {
     { rate: "3%", effective: "2024-04-01" }
   ]
 
+  const coupons = [
+    {
+      code: "WELCOME10",
+      type: "Percentage",
+      value: "10%",
+      expiry: "2025-12-31",
+      used: 23,
+      limit: 100,
+      status: "Active"
+    },
+    {
+      code: "START50",
+      type: "Fixed",
+      value: "$50",
+      expiry: "2025-10-01",
+      used: 10,
+      limit: 50,
+      status: "Active"
+    },
+    {
+      code: "REFERRAL20",
+      type: "Percentage",
+      value: "20%",
+      expiry: "2025-08-01",
+      used: 0,
+      limit: 30,
+      status: "Inactive"
+    }
+  ]
+
   const statusBadge = (status) =>
     status === "Active"
       ? "bg-primary text-white"
@@ -89,7 +119,7 @@ const Pricing = () => {
       {/* TABS */}
       <div className="flex flex-wrap gap-2 bg-gray-100 p-1 rounded-lg w-fit">
 
-        {["subscription", "commission"].map(tab => (
+        {["subscription", "commission", "coupons"].map(tab => (
           <button
             key={tab}
             onClick={() => setActiveTab(tab)}
@@ -101,7 +131,9 @@ const Pricing = () => {
           >
             {tab === "subscription"
               ? "Subscription Plans"
-              : "Commission Settings"}
+              : tab === "commission"
+              ? "Commission Settings"
+              : "Coupons"}
           </button>
         ))}
 
@@ -111,14 +143,13 @@ const Pricing = () => {
       {activeTab === "subscription" && (
         <>
 
-          {/* PLAN CARDS */}
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
 
             {plans.slice(0,3).map((plan,i)=>(
               <div key={i} className="bg-white p-6 rounded-xl shadow-sm border relative">
 
                 <span className="absolute top-4 right-4 px-3 py-1 text-xs rounded-full bg-primary text-white">
-                  Active
+                  {plan.status}
                 </span>
 
                 <h2 className="text-lg font-semibold mb-2">{plan.name}</h2>
@@ -137,21 +168,19 @@ const Pricing = () => {
 
           </div>
 
-          {/* TABLE */}
           <div className="bg-white rounded-xl shadow-sm overflow-hidden">
-
             <div className="overflow-x-auto">
 
               <table className="min-w-full">
 
                 <thead className="bg-gray-50 text-gray-600 text-sm">
                   <tr>
-                    <th className="p-4 text-left whitespace-nowrap">Plan Name</th>
-                    <th className="p-4 text-left whitespace-nowrap">Price</th>
-                    <th className="p-4 text-left whitespace-nowrap">Duration</th>
-                    <th className="p-4 text-left whitespace-nowrap">Features</th>
-                    <th className="p-4 text-left whitespace-nowrap">Status</th>
-                    <th className="p-4 text-left whitespace-nowrap">Active</th>
+                    <th className="p-4 text-left">Plan Name</th>
+                    <th className="p-4 text-left">Price</th>
+                    <th className="p-4 text-left">Duration</th>
+                    <th className="p-4 text-left">Features</th>
+                    <th className="p-4 text-left">Status</th>
+                    <th className="p-4 text-left">Active</th>
                     <th className="p-4"></th>
                   </tr>
                 </thead>
@@ -173,17 +202,156 @@ const Pricing = () => {
                       </td>
 
                       <td className="p-4">
-
                         <div className={`w-12 h-6 flex items-center rounded-full p-1 cursor-pointer ${
                           plan.enabled ? "bg-primary" : "bg-gray-300"
                         }`}>
-
                           <div className={`bg-white w-4 h-4 rounded-full shadow-md transform duration-300 ${
                             plan.enabled ? "translate-x-6" : ""
                           }`} />
-
                         </div>
+                      </td>
 
+                      <td className="p-4 text-gray-500 cursor-pointer">
+                        <FiEdit />
+                      </td>
+
+                    </tr>
+                  ))}
+
+                </tbody>
+
+              </table>
+
+            </div>
+          </div>
+
+        </>
+      )}
+
+      {/* ================= COMMISSION TAB ================= */}
+      {activeTab === "commission" && (
+
+        <div className="bg-white p-6 rounded-xl shadow-sm w-full md:w-[600px]">
+
+          <h2 className="text-lg font-semibold mb-2">
+            Platform Commission Rate
+          </h2>
+
+          <p className="text-gray-500 mb-4 text-sm">
+            Commission percentage applied to all transactions on the platform.
+          </p>
+
+          <div className="overflow-x-auto">
+
+            <table className="min-w-full">
+
+              <thead className="bg-gray-50 text-gray-600 text-sm">
+                <tr>
+                  <th className="p-4 text-left">Commission %</th>
+                  <th className="p-4 text-left">Effective From</th>
+                </tr>
+              </thead>
+
+              <tbody>
+
+                {commissionRates.map((c,i)=>(
+                  <tr key={i} className="border-t">
+                    <td className="p-4 font-medium">{c.rate}</td>
+                    <td className="p-4 text-gray-600">{c.effective}</td>
+                  </tr>
+                ))}
+
+              </tbody>
+
+            </table>
+
+          </div>
+
+        </div>
+
+      )}
+
+      {/* ================= COUPONS TAB ================= */}
+      {activeTab === "coupons" && (
+
+        <>
+
+          <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3">
+
+            <div>
+              <h2 className="text-lg font-semibold">Coupon Codes</h2>
+              <p className="text-gray-500 text-sm">
+                Create and manage discount coupons for subscriptions.
+              </p>
+            </div>
+
+            <div className="flex gap-2 flex-wrap">
+
+              <button className="flex items-center gap-2 px-4 py-2 rounded-lg border bg-white hover:bg-gray-50 text-sm">
+                <FiTag /> Generate Referral
+              </button>
+
+              <button className="flex items-center gap-2 px-4 py-2 rounded-lg bg-primary text-white hover:opacity-90 text-sm">
+                <FiPlus /> Create Coupon
+              </button>
+
+            </div>
+
+          </div>
+
+          <div className="bg-white rounded-xl shadow-sm overflow-hidden mt-4">
+
+            <div className="overflow-x-auto">
+
+              <table className="min-w-full">
+
+                <thead className="bg-gray-50 text-gray-600 text-sm">
+                  <tr>
+                    <th className="p-4 text-left">Code</th>
+                    <th className="p-4 text-left">Type</th>
+                    <th className="p-4 text-left">Discount</th>
+                    <th className="p-4 text-left">Expiry</th>
+                    <th className="p-4 text-left">Used</th>
+                    <th className="p-4 text-left">Limit</th>
+                    <th className="p-4 text-left">Status</th>
+                    <th className="p-4"></th>
+                  </tr>
+                </thead>
+
+                <tbody>
+
+                  {coupons.map((coupon,i)=>(
+                    <tr key={i} className="border-t hover:bg-gray-50">
+
+                      <td className="p-4 font-medium flex items-center gap-2">
+                        <FiTag className="text-gray-400"/>
+                        {coupon.code}
+                      </td>
+
+                      <td className="p-4 text-gray-600">
+                        {coupon.type}
+                      </td>
+
+                      <td className="p-4 font-medium">
+                        {coupon.value}
+                      </td>
+
+                      <td className="p-4 text-gray-600">
+                        {coupon.expiry}
+                      </td>
+
+                      <td className="p-4">
+                        {coupon.used}
+                      </td>
+
+                      <td className="p-4">
+                        {coupon.limit}
+                      </td>
+
+                      <td className="p-4">
+                        <span className={`px-3 py-1 rounded-full text-xs ${statusBadge(coupon.status)}`}>
+                          {coupon.status}
+                        </span>
                       </td>
 
                       <td className="p-4 text-gray-500 cursor-pointer">
@@ -201,69 +369,8 @@ const Pricing = () => {
 
           </div>
 
-          {/* SAVE BUTTON */}
-          <div className="flex justify-end">
-
-            <button className="px-6 py-3 rounded-lg bg-primary text-white hover:opacity-90">
-              Save Changes
-            </button>
-
-          </div>
-
         </>
-      )}
 
-      {/* ================= COMMISSION TAB ================= */}
-      {activeTab === "commission" && (
-        <>
-
-          <div className="bg-white p-6 rounded-xl shadow-sm w-full md:w-[600px]">
-
-            <h2 className="text-lg font-semibold mb-2">
-              Platform Commission Rate
-            </h2>
-
-            <p className="text-gray-500 mb-4 text-sm">
-              Commission percentage applied to all transactions on the platform.
-            </p>
-
-            <div className="overflow-x-auto">
-
-              <table className="min-w-full">
-
-                <thead className="bg-gray-50 text-gray-600 text-sm">
-                  <tr>
-                    <th className="p-4 text-left">Commission %</th>
-                    <th className="p-4 text-left">Effective From</th>
-                  </tr>
-                </thead>
-
-                <tbody>
-
-                  {commissionRates.map((c,i)=>(
-                    <tr key={i} className="border-t">
-                      <td className="p-4 font-medium">{c.rate}</td>
-                      <td className="p-4 text-gray-600">{c.effective}</td>
-                    </tr>
-                  ))}
-
-                </tbody>
-
-              </table>
-
-            </div>
-
-          </div>
-
-          <div>
-
-            <button className="flex items-center gap-2 px-4 py-2 rounded-lg border bg-white hover:bg-gray-50 text-sm">
-              <FiPlus /> Add New Commission Rate
-            </button>
-
-          </div>
-
-        </>
       )}
 
     </div>

@@ -9,6 +9,11 @@ import AuditLogs from "./pages/AuditLogs"
 import Pricing from "./pages/Pricing"
 import Workflows from "./pages/Workflows"
 import Settings from "./pages/Settings"
+import EmployeeDashboard from "./pages/employees/EmployeeDashboard"
+import EmployeeList from "./pages/employees/EmployeeList"
+import ClientDetails from "./pages/employees/ClientDetails"
+import RFQTracking from "./pages/employees/RFQTracking"
+import EmployeePerformance from "./pages/employees/EmployeePerformance"
 
 function App() {
   return (
@@ -21,6 +26,11 @@ function App() {
         <Route path="workflows" element={<Workflows />} />
         <Route path="audit-logs" element={<AuditLogs />} />
         <Route path="pricing" element={<Pricing />} />
+        <Route path="/employees" element={<EmployeeDashboard />} />
+        <Route path="/employees/list" element={<EmployeeList />} />
+        <Route path="/employees/clients" element={<ClientDetails />} />
+        <Route path="/employees/rfq" element={<RFQTracking />} />
+        <Route path="/employees/performance" element={<EmployeePerformance />} />
         <Route path="settings" element={<Settings />} />
       </Route>
     </Routes>
