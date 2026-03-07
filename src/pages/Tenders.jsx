@@ -7,16 +7,12 @@ const Tenders = () => {
   const [activeTab, setActiveTab] = useState("tenders")
   const [search, setSearch] = useState("")
 
-  /* ================= SUMMARY COUNTS ================= */
-
   const summary = {
     openTenders: 2,
     totalBids: 5,
     purchaseOrders: 3,
     invoices: 3
   }
-
-  /* ================= TENDERS DATA ================= */
 
   const tenders = [
     {
@@ -53,8 +49,6 @@ const Tenders = () => {
     }
   ]
 
-  /* ================= BIDS DATA ================= */
-
   const bids = [
     { id: "TND-001", supplier: "XYZ Traders", amount: "$4,500", status: "Submitted", date: "Feb 18, 2024" },
     { id: "TND-001", supplier: "Summit Holdings", amount: "$4,200", status: "Shortlisted", date: "Feb 19, 2024" },
@@ -63,23 +57,17 @@ const Tenders = () => {
     { id: "TND-004", supplier: "Innovate Partners", amount: "$85,000", status: "Submitted", date: "Apr 10, 2024" }
   ]
 
-  /* ================= PURCHASE ORDERS ================= */
-
   const purchaseOrders = [
     { id: "PO-001", buyer: "Pacific Trading", supplier: "Alpha Dynamics", amount: "$120,000", status: "Completed", created: "Mar 20, 2024" },
     { id: "PO-002", buyer: "ABC Pvt Ltd", supplier: "Summit Holdings", amount: "$4,200", status: "Approved", created: "Mar 1, 2024" },
     { id: "PO-003", buyer: "Innovate Partners", supplier: "XYZ Traders", amount: "$28,500", status: "Pending", created: "Apr 1, 2024" }
   ]
 
-  /* ================= INVOICES DATA ================= */
-
   const invoices = [
     { id: "INV-2024-0045", poRef: "PO-001", amount: "$120,000", status: "Paid", date: "Mar 25, 2024" },
     { id: "INV-2024-0046", poRef: "PO-002", amount: "$4,200", status: "Pending", date: "Mar 10, 2024" },
     { id: "INV-2024-0047", poRef: "PO-003", amount: "$28,500", status: "Overdue", date: "Apr 5, 2024" }
   ]
-
-  /* ================= STATUS COLOR ================= */
 
   const statusColor = (status) => {
     switch (status) {
@@ -115,20 +103,20 @@ const Tenders = () => {
   )
 
   return (
-    <div>
+    <div className="space-y-6">
 
       {/* HEADER */}
-      <div className="mb-6">
-        <h1 className="text-2xl font-bold text-primary">
+      <div>
+        <h1 className="text-xl md:text-2xl font-bold text-primary">
           Tenders & Transactions
         </h1>
-        <p className="text-gray-500">
+        <p className="text-gray-500 text-sm md:text-base">
           Monitor all tenders, bids, purchase orders, invoices and payments
         </p>
       </div>
 
       {/* SUMMARY CARDS */}
-      <div className="grid grid-cols-4 gap-6 mb-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
 
         <SummaryCard icon={<FaClock />} count={summary.openTenders} label="Open Tenders" color="bg-green-100 text-green-600" />
         <SummaryCard icon={<FaFileAlt />} count={summary.totalBids} label="Total Bids" color="bg-blue-100 text-blue-600" />
@@ -138,27 +126,31 @@ const Tenders = () => {
       </div>
 
       {/* TABS */}
-      <div className="flex gap-2 mb-6 bg-gray-100 p-1 rounded-lg w-fit">
+      <div className="flex flex-wrap gap-2 bg-gray-100 p-1 rounded-lg w-fit">
+
         {["tenders", "bids", "purchase", "invoices"].map(tab => (
           <button
             key={tab}
             onClick={() => setActiveTab(tab)}
-            className={`px-4 py-2 rounded-md text-sm capitalize ${
+            className={`px-4 py-2 rounded-md text-sm capitalize whitespace-nowrap ${
               activeTab === tab
                 ? "bg-white shadow text-primary"
                 : "text-gray-500"
             }`}
           >
-            {tab === "purchase" ? "Purchase Orders" :
-             tab === "invoices" ? "Invoices & Payments" :
-             tab}
+            {tab === "purchase"
+              ? "Purchase Orders"
+              : tab === "invoices"
+              ? "Invoices & Payments"
+              : tab}
           </button>
         ))}
+
       </div>
 
       {/* SEARCH */}
       {activeTab === "tenders" && (
-        <div className="relative w-96 mb-6">
+        <div className="relative w-full md:w-96">
           <FiSearch className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
           <input
             type="text"
@@ -172,6 +164,8 @@ const Tenders = () => {
 
       {/* TABLE */}
       <div className="bg-white rounded-xl shadow-sm overflow-hidden">
+
+        <div className="overflow-x-auto">
 
         {/* TENDERS */}
         {activeTab === "tenders" && (
@@ -256,17 +250,17 @@ const Tenders = () => {
           </TableWrapper>
         )}
 
+        </div>
+
       </div>
 
     </div>
   )
 }
 
-/* REUSABLE COMPONENTS */
-
 const SummaryCard = ({ icon, count, label, color }) => (
-  <div className="bg-white p-6 rounded-xl shadow-sm flex items-center gap-4">
-    <div className={`p-3 rounded-lg ${color}`}>
+  <div className="bg-white p-5 rounded-xl shadow-sm flex items-center gap-4">
+    <div className={`p-3 rounded-lg text-lg ${color}`}>
       {icon}
     </div>
     <div>
@@ -277,17 +271,15 @@ const SummaryCard = ({ icon, count, label, color }) => (
 )
 
 const TableWrapper = ({ headers, children }) => (
-  <table className="w-full">
+  <table className="min-w-full">
     <thead className="bg-gray-50 text-gray-600 text-sm">
       <tr>
         {headers.map((h, i) => (
-          <th key={i} className="p-4 text-left">{h}</th>
+          <th key={i} className="p-4 text-left whitespace-nowrap">{h}</th>
         ))}
       </tr>
     </thead>
-    <tbody>
-      {children}
-    </tbody>
+    <tbody>{children}</tbody>
   </table>
 )
 
