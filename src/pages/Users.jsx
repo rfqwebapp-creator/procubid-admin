@@ -1,10 +1,13 @@
 import { useState } from "react"
 import { FiSearch, FiMoreHorizontal, FiEdit2, FiTrash2 } from "react-icons/fi"
+import EditRoleModal from "./forms/EditRoleModal" // NEW
 
 const Users = () => {
 
   const [activeTab, setActiveTab] = useState("users")
   const [search, setSearch] = useState("")
+
+  const [selectedRole, setSelectedRole] = useState(null) // NEW
 
   const users = [
     {
@@ -87,6 +90,14 @@ const Users = () => {
   const filteredUsers = users.filter((u) =>
     u.name.toLowerCase().includes(search.toLowerCase())
   )
+
+  // NEW
+  const handleDeleteRole = (roleName) => {
+    const confirmDelete = window.confirm("Are you sure you want to delete this role?")
+    if (!confirmDelete) return
+
+    console.log("Deleted role:", roleName)
+  }
 
   return (
     <div className="w-full">
@@ -264,11 +275,17 @@ const Users = () => {
                   </td>
 
                   <td className="p-4 text-center">
-                    <FiEdit2 className="text-blue-600 cursor-pointer" />
+                    <FiEdit2
+                      onClick={() => setSelectedRole(role)} // NEW
+                      className="text-blue-600 cursor-pointer"
+                    />
                   </td>
 
                   <td className="p-4 text-center">
-                    <FiTrash2 className="text-red-600 cursor-pointer" />
+                    <FiTrash2
+                      onClick={() => handleDeleteRole(role.name)} // NEW
+                      className="text-red-600 cursor-pointer"
+                    />
                   </td>
 
                 </tr>
@@ -322,6 +339,14 @@ const Users = () => {
 
         </div>
 
+      )}
+
+      {/* EDIT ROLE MODAL */}
+      {selectedRole && (
+        <EditRoleModal
+          role={selectedRole}
+          close={() => setSelectedRole(null)}
+        />
       )}
 
     </div>

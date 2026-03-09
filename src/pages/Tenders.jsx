@@ -1,11 +1,13 @@
 import { useState } from "react"
 import { FiSearch, FiEye } from "react-icons/fi"
 import { FaClock, FaFileAlt, FaTruck, FaDollarSign } from "react-icons/fa"
+import TenderDetailsModal from "./forms/TenderDetailsModal" // NEW
 
 const Tenders = () => {
 
   const [activeTab, setActiveTab] = useState("tenders")
   const [search, setSearch] = useState("")
+  const [selectedTender, setSelectedTender] = useState(null) // NEW
 
   const summary = {
     openTenders: 2,
@@ -184,9 +186,15 @@ const Tenders = () => {
                 </td>
                 <td className="p-4">{t.deadline}</td>
                 <td className="p-4">{t.bids}</td>
-                <td className="p-4 flex items-center gap-2 text-primary cursor-pointer">
+
+                {/* UPDATED VIEW BUTTON */}
+                <td
+                  onClick={() => setSelectedTender(t)}
+                  className="p-4 flex items-center gap-2 text-primary cursor-pointer"
+                >
                   <FiEye /> View
                 </td>
+
               </tr>
             ))}
           </TableWrapper>
@@ -253,6 +261,14 @@ const Tenders = () => {
         </div>
 
       </div>
+
+      {/* MODAL */}
+      {selectedTender && (
+        <TenderDetailsModal
+          tender={selectedTender}
+          close={() => setSelectedTender(null)}
+        />
+      )}
 
     </div>
   )

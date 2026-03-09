@@ -1,8 +1,10 @@
 import { useState } from "react"
+import AddOrganizationModal from "./forms/AddOrganizationModal"
 
 const Organizations = () => {
 
   const [search, setSearch] = useState("")
+  const [showModal,setShowModal] = useState(false)
 
   const [organizations] = useState([
     {
@@ -72,7 +74,10 @@ const Organizations = () => {
           </p>
         </div>
 
-        <button className="bg-secondary text-dark px-4 py-2 rounded-lg font-medium hover:opacity-90 transition w-full sm:w-auto">
+        <button
+          onClick={()=>setShowModal(true)}
+          className="bg-secondary text-dark px-4 py-2 rounded-lg font-medium hover:opacity-90 transition w-full sm:w-auto"
+        >
           + Add Organization
         </button>
 
@@ -165,6 +170,11 @@ const Organizations = () => {
         </div>
 
       </div>
+
+      {/* MODAL */}
+      {showModal && (
+        <AddOrganizationModal close={()=>setShowModal(false)} />
+      )}
 
     </div>
   )
