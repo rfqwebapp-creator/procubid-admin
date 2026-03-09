@@ -1,9 +1,11 @@
 import { useState } from "react"
 import { FiPercent, FiPlus, FiEdit, FiTag } from "react-icons/fi"
+import AddCommissionModal from "./forms/AddCommissionModal" // NEW
 
 const Pricing = () => {
 
   const [activeTab, setActiveTab] = useState("subscription")
+  const [showCommissionModal, setShowCommissionModal] = useState(false) // NEW
 
   const plans = [
     {
@@ -105,7 +107,10 @@ const Pricing = () => {
 
         <div className="flex flex-wrap gap-3">
 
-          <button className="flex items-center gap-2 px-4 py-2 rounded-lg border bg-white hover:bg-gray-50 text-sm">
+          <button
+            onClick={() => setShowCommissionModal(true)} // NEW
+            className="flex items-center gap-2 px-4 py-2 rounded-lg border bg-white hover:bg-gray-50 text-sm"
+          >
             <FiPercent /> Commission Settings
           </button>
 
@@ -371,6 +376,12 @@ const Pricing = () => {
 
         </>
 
+      )}
+
+      {showCommissionModal && (
+        <AddCommissionModal
+          close={() => setShowCommissionModal(false)}
+        />
       )}
 
     </div>
