@@ -1,12 +1,17 @@
 import { useState } from "react"
 import { FiPercent, FiPlus, FiEdit, FiTag } from "react-icons/fi"
 import AddCommissionModal from "./forms/AddCommissionModal" // NEW
-
+import CreatePlanModal from "./forms/CreatePlanModal"
+import GenerateReferralModal from "./forms/GenerateReferralModal"
+import CreateCouponModal from "./forms/CreateCouponModal"
 const Pricing = () => {
 
   const [activeTab, setActiveTab] = useState("subscription")
   const [showCommissionModal, setShowCommissionModal] = useState(false) // NEW
-
+  const [showCreatePlanModal, setShowCreatePlanModal] = useState(false)
+  const [showReferralModal, setShowReferralModal] = useState(false)
+  const [showCouponModal, setShowCouponModal] = useState(false)
+  
   const plans = [
     {
       name: "Basic Plan",
@@ -114,7 +119,9 @@ const Pricing = () => {
             <FiPercent /> Commission Settings
           </button>
 
-          <button className="flex items-center gap-2 px-4 py-2 rounded-lg bg-primary text-white hover:opacity-90 text-sm">
+          <button 
+            onClick={() => setShowCreatePlanModal(true)}
+            className="flex items-center gap-2 px-4 py-2 rounded-lg bg-primary text-white hover:opacity-90 text-sm">
             <FiPlus /> New Plan
           </button>
 
@@ -292,11 +299,15 @@ const Pricing = () => {
 
             <div className="flex gap-2 flex-wrap">
 
-              <button className="flex items-center gap-2 px-4 py-2 rounded-lg border bg-white hover:bg-gray-50 text-sm">
+              <button
+                onClick={() => setShowReferralModal(true)}
+                className="flex items-center gap-2 px-4 py-2 rounded-lg border bg-white hover:bg-gray-50 text-sm">
                 <FiTag /> Generate Referral
               </button>
 
-              <button className="flex items-center gap-2 px-4 py-2 rounded-lg bg-primary text-white hover:opacity-90 text-sm">
+              <button 
+                onClick={() => setShowCouponModal(true)}
+                className="flex items-center gap-2 px-4 py-2 rounded-lg bg-primary text-white hover:opacity-90 text-sm">
                 <FiPlus /> Create Coupon
               </button>
 
@@ -383,6 +394,24 @@ const Pricing = () => {
           close={() => setShowCommissionModal(false)}
         />
       )}
+
+      {showCreatePlanModal && (
+  <CreatePlanModal
+    close={() => setShowCreatePlanModal(false)}
+  />
+)}
+
+    {showReferralModal && (
+  <GenerateReferralModal
+    close={() => setShowReferralModal(false)}
+  />
+)}
+
+      {showCouponModal && (
+  <CreateCouponModal
+    close={() => setShowCouponModal(false)}
+  />
+)}
 
     </div>
   )
