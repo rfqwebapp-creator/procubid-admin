@@ -56,6 +56,9 @@ function App() {
         <Route path="settings" element={<Settings />} />
       </Route>
 
+      {/* Default redirect */}
+      <Route path="*" element={<Navigate to="/login" />} />
+
     </Routes>
   )
 }
