@@ -366,7 +366,7 @@
 
 import { useState, useEffect } from "react"
 import API from "../api"
-import { FiSearch, FiMoreHorizontal, FiEdit2, FiTrash2, FiEye } from "react-icons/fi"
+import { FiSearch, FiMoreHorizontal, FiEdit2, FiTrash2, FiEye, FiSlash } from "react-icons/fi"
 import EditRoleModal from "./forms/EditRoleModal"
 
 const Users = () => {
@@ -605,6 +605,14 @@ const deleteUser = async (id) => {
                           onClick={() => setSelectedUser(user)}
                           className="text-blue-600 cursor-pointer"
                           title="View User"
+                        />
+
+                        <FiSlash
+                          onClick={() => toggleUserStatus(user.id)}
+                          className={`cursor-pointer text-red-600 hover:text-red-800 ${
+                            user.status === "Active" ? "text-red-600" : "text-green-600"
+                          }`}
+                          title={user.status === "Active" ? "Block User" : "Unblock User"}
                         />
 
                         <FiTrash2
