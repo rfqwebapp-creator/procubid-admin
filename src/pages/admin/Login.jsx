@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
-import axios from "axios";
+// import axios from "axios";
+import API from "../api"; // path correct aakkanam
 import { useNavigate } from "react-router-dom";
 
 const Login = () => {
@@ -22,14 +23,17 @@ const Login = () => {
 
     try {
 
-      const res = await axios.post(
-        "http://localhost:5000/api/auth/login",
-        {
-          email: email,
-          password: password
-        }
-      );
-
+      // const res = await axios.post(
+      //   "http://localhost:5000/api/auth/login",
+      //   {
+      //     email: email,
+      //     password: password
+      //   }
+      // );
+const res = await API.post("/auth/login", {
+  email,
+  password
+});
       localStorage.setItem("token", res.data.token);
 
       navigate("/dashboard", { replace: true });
