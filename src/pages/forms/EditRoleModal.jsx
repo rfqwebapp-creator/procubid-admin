@@ -1,4 +1,5 @@
 import { useState } from "react"
+import API from "../../api";
 
 const modulesList = [
   "Tender",
@@ -21,13 +22,23 @@ const permissionsList = [
 
 const EditRoleModal = ({ role, close }) => {
 
-  const [form,setForm] = useState({
-    name: role?.name || "",
-    description: role?.description || "",
-    modules: role?.modules || [],
-    permissions: role?.permissions || []
-  })
+const [form,setForm] = useState({
+  name: role?.name || "",
+  description: role?.description || "",
 
+// modules: role?.modules ? role.modules.split(", ") : [],
+//   permissions: role?.permissions
+//   ? role.permissions.split(", ")
+//   : []
+
+modules: role?.modules
+  ? role.modules.split(",").map(m => m.trim())
+  : [],
+
+permissions: role?.permissions
+  ? role.permissions.split(",").map(p => p.trim())
+  : []
+})
   const handleChange = (e)=>{
     setForm({
       ...form,
@@ -61,13 +72,26 @@ const EditRoleModal = ({ role, close }) => {
     })
   }
 
-  const handleSubmit=(e)=>{
-    e.preventDefault()
+const handleSubmit = async (e) => {
+  e.preventDefault();
 
-    console.log("Updated Role:",form)
+  try {
+    await API.put(`/roles/${role.id || role.role_id}`, {
+  ...form,
+  modules: form.modules.join(","),
+  permissions: form.permissions.join(",")
+}); // 🔥 backend update
 
-    close()
+    alert("Role updated successfully");
+
+    close(); // modal close
+
+    // window.location.reload(); // quick refresh (later improve cheyyam)
+
+  } catch (error) {
+    console.log("Update error:", error);
   }
+};
 
   return (
 
