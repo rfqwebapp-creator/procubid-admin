@@ -1,5 +1,5 @@
 import { useState } from "react"
-
+import axios from "axios";
 const AddOrganizationModal = ({ close }) => {
 
   const [form,setForm] = useState({
@@ -18,13 +18,27 @@ const AddOrganizationModal = ({ close }) => {
     })
   }
 
-  const handleSubmit = (e)=>{
-    e.preventDefault()
+ const handleSubmit = async (e)=>{
+  e.preventDefault()
 
-    console.log(form)
+  try {
+    await axios.post("https://api.procubid.com/api/organizations/add", {
+      company_name: form.name,
+      email: form.email,
+      role_type: form.role,
+      sector: form.sector,
+      region: form.region,
+      status: form.status
+    });
 
-    close()
+    alert("Organization added ✅");
+    close();
+
+  } catch (err) {
+    console.error(err);
+    alert("Error adding organization ❌");
   }
+}
 
   return (
 
