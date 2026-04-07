@@ -6,7 +6,7 @@ const API = axios.create({
   // baseURL: "/api",
   // baseURL: "http://13.201.63.42:5000/api",
 
-  baseURL: "https://api.procubid.com/admin/api",
+  baseURL: "https://api.procubid.com/api",
 });
 
 API.interceptors.request.use((req) => {

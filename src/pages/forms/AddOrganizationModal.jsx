@@ -1,5 +1,5 @@
 import { useState } from "react"
-import axios from "axios";
+import API from "../api";
 const AddOrganizationModal = ({ close }) => {
 
   const [form,setForm] = useState({
@@ -22,7 +22,7 @@ const AddOrganizationModal = ({ close }) => {
   e.preventDefault()
 
   try {
-    await axios.post("https://api.procubid.com/api/organizations/add", {
+    await API.post("https://api.procubid.com/api/organizations/add", {
       company_name: form.name,
       email: form.email,
       role_type: form.role,
