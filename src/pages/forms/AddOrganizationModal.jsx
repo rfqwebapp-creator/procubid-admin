@@ -20,6 +20,7 @@ const AddOrganizationModal = ({ close }) => {
 
  const handleSubmit = async (e)=>{
   e.preventDefault()
+  console.log("SUBMITTED SUCCESSFULLY", form) 
 
   try {
     await API.post("https://api.procubid.com/api/organizations/add", {
