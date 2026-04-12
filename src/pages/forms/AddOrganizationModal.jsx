@@ -1,5 +1,5 @@
 import { useState } from "react"
-import API from "../api";
+import API from "../../api";
 const AddOrganizationModal = ({ close }) => {
 
   const [form,setForm] = useState({
