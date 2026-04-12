@@ -1,6 +1,6 @@
 import { useState } from "react"
 import API from "../../api";
-const AddOrganizationModal = ({ close }) => {
+const AddOrganizationModal = ({ close, onSuccess }) => {
 
   const [form,setForm] = useState({
     name:"",
@@ -33,8 +33,12 @@ const AddOrganizationModal = ({ close }) => {
     });
 
     console.log("API RESPONSE:", res.data);
-    alert("Organization added ✅");
-    close();
+   alert("Organization added ✅");
+    if (onSuccess) {
+      onSuccess();
+} else {
+  close();
+}
   } catch (err) {
     console.error("ADD ORGANIZATION ERROR:", err.response?.data || err.message);
     alert("Error adding organization ❌");

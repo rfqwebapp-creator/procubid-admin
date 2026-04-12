@@ -1,63 +1,55 @@
-import { useState } from "react"
+import { useEffect, useState } from "react";
+import API from "../../api";
 import AddOrganizationModal from "./forms/AddOrganizationModal"
 
 const Organizations = () => {
+  const [search, setSearch] = useState("");
+  const [showModal, setShowModal] = useState(false);
+  const [organizations, setOrganizations] = useState([]);
+  const [loading, setLoading] = useState(true);
 
-  const [search, setSearch] = useState("")
-  const [showModal,setShowModal] = useState(false)
-
-  const [organizations] = useState([
-    {
-      name: "ABC Pvt Ltd",
-      email: "abc@abcpvt.com",
-      role: "Buyer",
-      sector: "Manufacturing",
-      region: "South Asia",
-      status: "Active"
-    },
-    {
-      name: "XYZ Traders",
-      email: "xyz@xyztraders.com",
-      role: "Supplier",
-      sector: "Logistics",
-      region: "North America",
-      status: "Pending"
-    },
-    {
-      name: "Innovate Partners",
-      email: "info@innovate.co",
-      role: "Both",
-      sector: "Technology",
-      region: "Europe",
-      status: "Active"
-    },
-    {
-      name: "Summit Holdings",
-      email: "contact@summit.com",
-      role: "Supplier",
-      sector: "Energy",
-      region: "North America",
-      status: "Suspended"
+  const fetchOrganizations = async () => {
+    try {
+      setLoading(true);
+      const res = await API.get("/organizations");
+      setOrganizations(res.data || []);
+    } catch (error) {
+      console.error("Fetch organizations error:", error);
+    } finally {
+      setLoading(false);
     }
-  ])
+  };
 
-  const filteredOrganizations = organizations.filter((org) =>
-    org.name.toLowerCase().includes(search.toLowerCase()) ||
-    org.email.toLowerCase().includes(search.toLowerCase()) ||
-    org.region.toLowerCase().includes(search.toLowerCase())
-  )
+  useEffect(() => {
+    fetchOrganizations();
+  }, []);
+
+  const filteredOrganizations = organizations.filter((org) => {
+    const name = (org.company_name || org.name || "").toLowerCase();
+    const email = (org.email || "").toLowerCase();
+    const region = (org.region || "").toLowerCase();
+    const searchText = search.toLowerCase();
+
+    return (
+      name.includes(searchText) ||
+      email.includes(searchText) ||
+      region.includes(searchText)
+    );
+  });
 
   const getStatusColor = (status) => {
-    if (status === "Active") return "bg-green-100 text-green-700"
-    if (status === "Pending") return "bg-yellow-100 text-yellow-700"
-    if (status === "Suspended") return "bg-red-100 text-red-700"
-  }
+    if (status === "Active") return "bg-green-100 text-green-700";
+    if (status === "Pending") return "bg-yellow-100 text-yellow-700";
+    if (status === "Suspended") return "bg-red-100 text-red-700";
+    return "bg-gray-100 text-gray-700";
+  };
 
   const getRoleColor = (role) => {
-    if (role === "Buyer") return "bg-blue-100 text-blue-700"
-    if (role === "Supplier") return "bg-green-100 text-green-700"
-    if (role === "Both") return "bg-orange-100 text-orange-700"
-  }
+    if (role === "Buyer") return "bg-blue-100 text-blue-700";
+    if (role === "Supplier") return "bg-green-100 text-green-700";
+    if (role === "Both") return "bg-orange-100 text-orange-700";
+    return "bg-gray-100 text-gray-700";
+  };
 
   return (
     <div className="w-full">
