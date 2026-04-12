@@ -18,28 +18,28 @@ const AddOrganizationModal = ({ close }) => {
     })
   }
 
- const handleSubmit = async (e)=>{
-  e.preventDefault()
-  console.log("SUBMITTED SUCCESSFULLY", form) 
+ const handleSubmit = async (e) => {
+  e.preventDefault();
+  console.log("SUBMITTED SUCCESSFULLY", form);
 
   try {
-    await API.post("https://api.procubid.com/api/organizations/add", {
+    const res = await API.post("/organizations/add", {
       company_name: form.name,
       email: form.email,
       role_type: form.role,
       sector: form.sector,
       region: form.region,
-      status: form.status
+      status: form.status,
     });
 
+    console.log("API RESPONSE:", res.data);
     alert("Organization added ✅");
     close();
-
   } catch (err) {
-    console.error(err);
+    console.error("ADD ORGANIZATION ERROR:", err.response?.data || err.message);
     alert("Error adding organization ❌");
   }
-}
+};
 
   return (
 
