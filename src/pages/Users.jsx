@@ -48,26 +48,29 @@ const Users = () => {
         setRoles(rolesData);
 
         const permissionMap = {};
-
+        
         rolesData.forEach((role) => {
-          const permsArray = role.permissions
-            ? role.permissions.split(",").map((p) => p.trim())
-            : [];
 
-          permsArray.forEach((perm) => {
-            if (!perm) return;
+        const permsArray = Array.isArray(role?.permissions)
+  ? role.permissions
+  : typeof role?.permissions === "string"
+  ? role.permissions.split(",").map((p) => p.trim())
+  : [];
 
-            if (!permissionMap[perm]) {
-              permissionMap[perm] = {
-                permission: perm,
-                module: permissionsMaster[perm] || "-",
-                assigned_roles: [],
-              };
-            }
+permsArray.forEach((perm) => {
+  if (!perm) return;
 
-            permissionMap[perm].assigned_roles.push(role.name);
-          });
-        });
+  if (!permissionMap[perm]) {
+    permissionMap[perm] = {
+      permission: perm,
+      module: permissionsMaster[perm] || "-",
+      assigned_roles: [],
+    };
+  }
+
+  permissionMap[perm].assigned_roles.push(role.name);
+});
+});
 
         const finalData = Object.values(permissionMap).map((p) => ({
           ...p,
@@ -84,9 +87,11 @@ const Users = () => {
       const permissionMap = {};
 
       roles.forEach((role) => {
-        const permsArray = role.permissions
-          ? role.permissions.split(",").map((p) => p.trim())
-          : [];
+       const permsArray = Array.isArray(role?.permissions)
+  ? role.permissions
+  : typeof role?.permissions === "string"
+  ? role.permissions.split(",").map((p) => p.trim())
+  : [];
 
         permsArray.forEach((perm) => {
           if (!perm) return;
@@ -395,20 +400,22 @@ const Users = () => {
                   <td className="p-4">{role.modules}</td>
 
                   <td className="p-4 text-gray-500">
-                    {role.permissions
-                      ? (() => {
-                          const perms = role.permissions.split(", ");
+  {Array.isArray(role.permissions)
+    ? role.permissions.length <= 2
+      ? role.permissions.join(", ")
+      : `${role.permissions.slice(0, 2).join(", ")} (+${role.permissions.length - 2} more)`
+    : typeof role.permissions === "string"
+    ? (() => {
+        const perms = role.permissions.split(",").map((p) => p.trim());
 
-                          if (perms.length <= 2) {
-                            return perms.join(", ");
-                          }
+        if (perms.length <= 2) {
+          return perms.join(", ");
+        }
 
-                          return `${perms.slice(0, 2).join(", ")} (+${
-                            perms.length - 2
-                          } more)`;
-                        })()
-                      : "No permissions"}
-                  </td>
+        return `${perms.slice(0, 2).join(", ")} (+${perms.length - 2} more)`;
+      })()
+    : "No permissions"}
+</td>
 
                   <td className="p-4 text-center">
                     <FiEdit2
@@ -449,9 +456,10 @@ const Users = () => {
                   <td className="p-4 text-gray-600">{perm.module}</td>
 
                   <td className="p-4 flex gap-2 flex-wrap">
-                    {perm.assigned_roles
-                      .split(",")
-                      .map((role, idx) => (
+                    {(perm.assigned_roles || "")
+  .split(",")
+  .filter(Boolean)
+  .map((role, idx) => (
                         <span
                           key={idx}
                           className={`px-3 py-1 rounded-full text-xs ${getRoleColor(
