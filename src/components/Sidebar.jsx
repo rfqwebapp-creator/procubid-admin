@@ -35,7 +35,7 @@ const Sidebar = ({ closeSidebar }) => {
       <nav className="flex flex-col gap-1">
 
         <NavLink
-          to="/"
+          to="/dashboard"
           onClick={closeSidebar}
           className={({ isActive }) =>
             `flex items-center gap-3 px-3 py-2 rounded-lg transition
