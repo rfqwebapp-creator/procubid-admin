@@ -60,17 +60,28 @@ const Users = () => {
 permsArray.forEach((perm) => {
   if (!perm) return;
 
-  if (!permissionMap[perm]) {
-    permissionMap[perm] = {
-      permission: perm,
-      module: permissionsMaster[perm] || "-",
+  let permName = "";
+  let moduleName = "-";
+
+  if (typeof perm === "string") {
+    permName = perm;
+    moduleName = permissionsMaster[perm] || "-";
+  } else if (typeof perm === "object") {
+    permName = perm.module || perm.page || "Unknown";
+    moduleName = perm.module || "-";
+  }
+
+  if (!permissionMap[permName]) {
+    permissionMap[permName] = {
+      permission: permName,
+      module: moduleName,
       assigned_roles: [],
     };
   }
 
-  permissionMap[perm].assigned_roles.push(role.name);
+  permissionMap[permName].assigned_roles.push(role.name);
 });
-});
+});   
 
         const finalData = Object.values(permissionMap).map((p) => ({
           ...p,
@@ -196,6 +207,36 @@ permsArray.forEach((perm) => {
     } catch (error) {
       console.log("Delete role error:", error);
     }
+  };
+
+
+  const formatPermissions = (permissions) => {
+    if (!permissions) return "No permissions";
+
+    let parsed = permissions;
+
+    if (typeof permissions === "string") {
+      try {
+        parsed = JSON.parse(permissions);
+      } catch {
+        return permissions;
+      }
+    }
+
+    if (!Array.isArray(parsed)) return "No permissions";
+
+    const formatted = parsed.map((item) => {
+      if (typeof item === "string") return item;
+
+      const moduleName = item.module || item.page || "Unknown";
+      const actions = Array.isArray(item.actions) ? item.actions.join(", ") : "";
+      const field = item.field ? ` - ${item.field}` : "";
+
+      return `${moduleName}${field}: ${actions}`;
+    });
+
+    if (formatted.length <= 2) return formatted.join(", ");
+    return `${formatted.slice(0, 2).join(", ")} (+${formatted.length - 2} more)`;
   };
 
   return (
@@ -385,7 +426,6 @@ permsArray.forEach((perm) => {
               <tr className="text-left">
                 <th className="p-4">Role</th>
                 <th className="p-4">Description</th>
-                <th className="p-4">Module</th>
                 <th className="p-4">Permissions</th>
                 <th className="p-4 text-center">Edit</th>
                 <th className="p-4 text-center">Delete</th>
@@ -393,46 +433,31 @@ permsArray.forEach((perm) => {
             </thead>
 
             <tbody>
-              {roles.map((role, i) => (
-                <tr key={i} className="border-t hover:bg-gray-50">
-                  <td className="p-4 font-medium">{role.name}</td>
-                  <td className="p-4 text-gray-600">{role.description}</td>
-                  <td className="p-4">{role.modules}</td>
+  {roles.map((role, i) => (
+    <tr key={i} className="border-t hover:bg-gray-50">
+      <td className="p-4 font-medium">{role.name}</td>
+      <td className="p-4 text-gray-600">{role.description}</td>
 
-                  <td className="p-4 text-gray-500">
-  {Array.isArray(role.permissions)
-    ? role.permissions.length <= 2
-      ? role.permissions.join(", ")
-      : `${role.permissions.slice(0, 2).join(", ")} (+${role.permissions.length - 2} more)`
-    : typeof role.permissions === "string"
-    ? (() => {
-        const perms = role.permissions.split(",").map((p) => p.trim());
+      <td className="p-4 text-gray-500">
+        {formatPermissions(role.permissions)}
+      </td>
 
-        if (perms.length <= 2) {
-          return perms.join(", ");
-        }
+      <td className="p-4 text-center">
+        <FiEdit2
+          onClick={() => setSelectedRole(role)}
+          className="text-blue-600 cursor-pointer"
+        />
+      </td>
 
-        return `${perms.slice(0, 2).join(", ")} (+${perms.length - 2} more)`;
-      })()
-    : "No permissions"}
-</td>
-
-                  <td className="p-4 text-center">
-                    <FiEdit2
-                      onClick={() => setSelectedRole(role)}
-                      className="text-blue-600 cursor-pointer"
-                    />
-                  </td>
-
-                  <td className="p-4 text-center">
-                    <FiTrash2
-                      onClick={() => handleDeleteRole(role.id)}
-                      className="text-red-600 cursor-pointer"
-                    />
-                  </td>
-                </tr>
-              ))}
-            </tbody>
+      <td className="p-4 text-center">
+        <FiTrash2
+          onClick={() => handleDeleteRole(role.id)}
+          className="text-red-600 cursor-pointer"
+        />
+      </td>
+    </tr>
+  ))}
+</tbody>
           </table>
         </div>
       )}

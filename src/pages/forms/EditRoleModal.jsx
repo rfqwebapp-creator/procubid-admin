@@ -1,105 +1,69 @@
-import { useState } from "react"
+import { useEffect, useState } from "react";
 import API from "../../api";
 
-const modulesList = [
-  "Tender",
-  "PO",
-  "Bid",
-  "Invoice",
-  "Reports",
-  "Users"
-]
-
-const permissionsList = [
-  "create_tender",
-  "submit_bid",
-  "approve_invoice",
-  "view_reports",
-  "create_invoice",
-  "manage_users",
-  "manage_roles"
-]
-
 const EditRoleModal = ({ role, close }) => {
+  const [form, setForm] = useState({
+    name: "",
+    description: "",
+    permissionsText: "[]",
+  });
 
-const [form,setForm] = useState({
-  name: role?.name || "",
-  description: role?.description || "",
+  useEffect(() => {
+    let parsedPermissions = role?.permissions || [];
 
-// modules: role?.modules ? role.modules.split(", ") : [],
-//   permissions: role?.permissions
-//   ? role.permissions.split(", ")
-//   : []
+    if (typeof parsedPermissions === "string") {
+      try {
+        parsedPermissions = JSON.parse(parsedPermissions);
+      } catch {
+        parsedPermissions = [];
+      }
+    }
 
-modules: role?.modules
-  ? role.modules.split(",").map(m => m.trim())
-  : [],
-
-permissions: role?.permissions
-  ? role.permissions.split(",").map(p => p.trim())
-  : []
-})
-  const handleChange = (e)=>{
     setForm({
-      ...form,
-      [e.target.name]: e.target.value
-    })
-  }
+      name: role?.name || "",
+      description: role?.description || "",
+      permissionsText: JSON.stringify(parsedPermissions, null, 2),
+    });
+  }, [role]);
 
-  const toggleModule = (module)=>{
-    setForm(prev=>{
-      const exists = prev.modules.includes(module)
+  const handleChange = (e) => {
+    setForm((prev) => ({
+      ...prev,
+      [e.target.name]: e.target.value,
+    }));
+  };
 
-      return {
-        ...prev,
-        modules: exists
-          ? prev.modules.filter(m=>m!==module)
-          : [...prev.modules,module]
-      }
-    })
-  }
+  const handleSubmit = async (e) => {
+    e.preventDefault();
 
-  const togglePermission = (permission)=>{
-    setForm(prev=>{
-      const exists = prev.permissions.includes(permission)
+    let parsedPermissions = [];
 
-      return {
-        ...prev,
-        permissions: exists
-          ? prev.permissions.filter(p=>p!==permission)
-          : [...prev.permissions,permission]
-      }
-    })
-  }
+    try {
+      parsedPermissions = JSON.parse(form.permissionsText);
+    } catch (error) {
+      alert("Permissions JSON is invalid");
+      return;
+    }
 
-const handleSubmit = async (e) => {
-  e.preventDefault();
+    try {
+      await API.put(`/roles/${role.id || role.role_id}`, {
+        name: form.name,
+        description: form.description,
+        permissions: parsedPermissions,
+      });
 
-  try {
-    await API.put(`/roles/${role.id || role.role_id}`, {
-  ...form,
-  modules: form.modules.join(","),
-  permissions: form.permissions.join(",")
-}); // 🔥 backend update
-
-    alert("Role updated successfully");
-
-    close(); // modal close
-
-    // window.location.reload(); // quick refresh (later improve cheyyam)
-
-  } catch (error) {
-    console.log("Update error:", error);
-  }
-};
+      alert("Role updated successfully");
+      close();
+      window.location.reload();
+    } catch (error) {
+      console.log("Update error:", error);
+      alert("Failed to update role");
+    }
+  };
 
   return (
-
     <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
-
       <div className="bg-white rounded-xl shadow-xl w-full max-w-2xl p-6 relative">
-
-        {/* CLOSE */}
         <button
           onClick={close}
           className="absolute right-4 top-4 text-gray-400 hover:text-gray-600"
@@ -107,23 +71,17 @@ const handleSubmit = async (e) => {
           ✕
         </button>
 
-        {/* TITLE */}
         <h2 className="text-xl font-semibold mb-1">
           Edit Role — {role?.name}
         </h2>
 
         <p className="text-gray-500 text-sm mb-6">
-          Update the role details, modules, and permissions.
+          Update the role details and permissions.
         </p>
 
         <form onSubmit={handleSubmit} className="space-y-5">
-
-          {/* ROLE NAME */}
           <div>
-            <label className="text-sm font-medium">
-              Role Name
-            </label>
-
+            <label className="text-sm font-medium">Role Name</label>
             <input
               type="text"
               name="name"
@@ -133,12 +91,8 @@ const handleSubmit = async (e) => {
             />
           </div>
 
-          {/* DESCRIPTION */}
           <div>
-            <label className="text-sm font-medium">
-              Description
-            </label>
-
+            <label className="text-sm font-medium">Description</label>
             <textarea
               name="description"
               rows="3"
@@ -148,65 +102,18 @@ const handleSubmit = async (e) => {
             />
           </div>
 
-          {/* MODULES */}
           <div>
-
-            <h3 className="font-medium mb-2">
-              Modules
-            </h3>
-
-            <div className="flex flex-wrap gap-4">
-
-              {modulesList.map(module=>(
-                <label key={module} className="flex items-center gap-2">
-
-                  <input
-                    type="checkbox"
-                    checked={form.modules.includes(module)}
-                    onChange={()=>toggleModule(module)}
-                    className="accent-green-700"
-                  />
-
-                  {module}
-
-                </label>
-              ))}
-
-            </div>
-
+            <label className="text-sm font-medium">Permissions JSON</label>
+            <textarea
+              name="permissionsText"
+              rows="12"
+              value={form.permissionsText}
+              onChange={handleChange}
+              className="w-full mt-1 border rounded-lg px-3 py-2 font-mono text-sm focus:outline-none focus:ring-2 focus:ring-green-700"
+            />
           </div>
 
-          {/* PERMISSIONS */}
-          <div>
-
-            <h3 className="font-medium mb-2">
-              Permissions
-            </h3>
-
-            <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
-
-              {permissionsList.map(permission=>(
-                <label key={permission} className="flex items-center gap-2">
-
-                  <input
-                    type="checkbox"
-                    checked={form.permissions.includes(permission)}
-                    onChange={()=>togglePermission(permission)}
-                    className="accent-green-700"
-                  />
-
-                  {permission}
-
-                </label>
-              ))}
-
-            </div>
-
-          </div>
-
-          {/* BUTTONS */}
           <div className="flex justify-end gap-3 pt-4">
-
             <button
               type="button"
               onClick={close}
@@ -221,15 +128,11 @@ const handleSubmit = async (e) => {
             >
               Save Changes
             </button>
-
           </div>
-
         </form>
-
       </div>
-
     </div>
-  )
-}
+  );
+};
 
-export default EditRoleModal
+export default EditRoleModal;
