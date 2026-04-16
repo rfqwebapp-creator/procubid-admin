@@ -1,11 +1,22 @@
 import { useEffect, useState } from "react";
 import API from "../../api";
 
+const AVAILABLE_PERMISSIONS = [
+  { module: "Purchase Request", actions: ["Manage", "View"] },
+  { module: "Purchase Order", actions: ["Manage", "View"] },
+  { module: "Delivery Note", actions: ["Manage", "View"] },
+  { module: "Bills", actions: ["Manage", "View"] },
+  { module: "User Roles", actions: ["Manage", "View"] },
+  { module: "RFX", actions: ["Manage", "View"] },
+  { module: "Account Settings", actions: ["Manage", "View"] },
+  { module: "Offline transactions", actions: ["Manage", "View"] },
+];
+
 const EditRoleModal = ({ role, close }) => {
   const [form, setForm] = useState({
     name: "",
     description: "",
-    permissionsText: "[]",
+    permissions: [],
   });
 
   useEffect(() => {
@@ -19,10 +30,14 @@ const EditRoleModal = ({ role, close }) => {
       }
     }
 
+    if (!Array.isArray(parsedPermissions)) {
+      parsedPermissions = [];
+    }
+
     setForm({
       name: role?.name || "",
       description: role?.description || "",
-      permissionsText: JSON.stringify(parsedPermissions, null, 2),
+      permissions: parsedPermissions,
     });
   }, [role]);
 
@@ -33,37 +48,86 @@ const EditRoleModal = ({ role, close }) => {
     }));
   };
 
+  const isChecked = (moduleName, action) => {
+    const foundModule = form.permissions.find(
+      (item) => item.module === moduleName
+    );
+
+    if (!foundModule) return false;
+
+    return foundModule.actions?.includes(action);
+  };
+
+  const handlePermissionToggle = (moduleName, action) => {
+    setForm((prev) => {
+      const updatedPermissions = [...prev.permissions];
+      const moduleIndex = updatedPermissions.findIndex(
+        (item) => item.module === moduleName
+      );
+
+      if (moduleIndex === -1) {
+        updatedPermissions.push({
+          module: moduleName,
+          actions: [action],
+        });
+      } else {
+        const currentActions = updatedPermissions[moduleIndex].actions || [];
+        const actionExists = currentActions.includes(action);
+
+        if (actionExists) {
+          const filteredActions = currentActions.filter((a) => a !== action);
+
+          if (filteredActions.length === 0) {
+            updatedPermissions.splice(moduleIndex, 1);
+          } else {
+            updatedPermissions[moduleIndex] = {
+              ...updatedPermissions[moduleIndex],
+              actions: filteredActions,
+            };
+          }
+        } else {
+          updatedPermissions[moduleIndex] = {
+            ...updatedPermissions[moduleIndex],
+            actions: [...currentActions, action],
+          };
+        }
+      }
+
+      return {
+        ...prev,
+        permissions: updatedPermissions,
+      };
+    });
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    let parsedPermissions = [];
+    const payload = {
+      name: form.name,
+      description: form.description,
+      permissions: form.permissions,
+      field_permissions: role?.field_permissions || [],
+    };
+
+    console.log("UPDATE PAYLOAD:", payload);
 
     try {
-      parsedPermissions = JSON.parse(form.permissionsText);
-    } catch (error) {
-      alert("Permissions JSON is invalid");
-      return;
-    }
-
-    try {
-      await API.put(`/roles/${role.id || role.role_id}`, {
-        name: form.name,
-        description: form.description,
-        permissions: parsedPermissions,
-      });
+      await API.put(`/roles/${role.id || role.role_id}`, payload);
 
       alert("Role updated successfully");
       close();
       window.location.reload();
     } catch (error) {
       console.log("Update error:", error);
+      console.log("Error response:", error?.response?.data);
       alert("Failed to update role");
     }
   };
 
   return (
     <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
-      <div className="bg-white rounded-xl shadow-xl w-full max-w-2xl p-6 relative">
+      <div className="bg-white rounded-xl shadow-xl w-full max-w-3xl p-6 relative max-h-[90vh] overflow-y-auto">
         <button
           onClick={close}
           className="absolute right-4 top-4 text-gray-400 hover:text-gray-600"
@@ -103,14 +167,34 @@ const EditRoleModal = ({ role, close }) => {
           </div>
 
           <div>
-            <label className="text-sm font-medium">Permissions JSON</label>
-            <textarea
-              name="permissionsText"
-              rows="12"
-              value={form.permissionsText}
-              onChange={handleChange}
-              className="w-full mt-1 border rounded-lg px-3 py-2 font-mono text-sm focus:outline-none focus:ring-2 focus:ring-green-700"
-            />
+            <label className="text-sm font-medium block mb-3">Permissions</label>
+
+            <div className="border rounded-lg p-4 space-y-4 max-h-[350px] overflow-y-auto">
+              {AVAILABLE_PERMISSIONS.map((item, index) => (
+                <div key={index} className="border-b pb-3 last:border-b-0">
+                  <p className="font-medium text-gray-800 mb-2">{item.module}</p>
+
+                  <div className="flex flex-wrap gap-6">
+                    {item.actions.map((action, i) => (
+                      <label
+                        key={i}
+                        className="flex items-center gap-2 text-sm cursor-pointer"
+                      >
+                        <input
+                          type="checkbox"
+                          checked={isChecked(item.module, action)}
+                          onChange={() =>
+                            handlePermissionToggle(item.module, action)
+                          }
+                          className="w-4 h-4"
+                        />
+                        {action}
+                      </label>
+                    ))}
+                  </div>
+                </div>
+              ))}
+            </div>
           </div>
 
           <div className="flex justify-end gap-3 pt-4">
