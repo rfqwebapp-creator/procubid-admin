@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react"
 import { FiPercent, FiPlus, FiEdit, FiTag } from "react-icons/fi"
-import API from "../../api"
+import API from "../api";
 import AddCommissionModal from "./forms/AddCommissionModal"
 import CreatePlanModal from "./forms/CreatePlanModal"
 import GenerateReferralModal from "./forms/GenerateReferralModal"
