@@ -1,6 +1,6 @@
 import { useState } from "react"
 import { FiX } from "react-icons/fi"
-import API from "../../../api"
+import API from "../../api"
 
 const CreatePlanModal = ({ close, refreshPlans }) => {
   const [form, setForm] = useState({
