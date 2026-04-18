@@ -92,7 +92,7 @@ const CreatePlanModal = ({ close, refreshPlans }) => {
                 Price
               </label>
 
-                          <input
+              <input
               type="text"
               name="price"
               placeholder="e.g. $99"
@@ -122,6 +122,8 @@ const CreatePlanModal = ({ close, refreshPlans }) => {
                 className="w-full mt-1 border rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-700"
               >
                 <option value="Monthly">Monthly</option>
+                <option value="3 Months">3 Months</option>
+                <option value="6 Months">6 Months</option>
                 <option value="Yearly">Yearly</option>
               </select>
             </div>
