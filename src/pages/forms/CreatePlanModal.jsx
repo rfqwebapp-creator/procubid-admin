@@ -92,15 +92,22 @@ const CreatePlanModal = ({ close, refreshPlans }) => {
                 Price
               </label>
 
-              <input
-                type="number"
-                name="price"
-                placeholder="e.g. 99"
-                value={form.price}
-                onChange={handleChange}
-                className="w-full mt-1 border rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-700"
-                required
-              />
+                          <input
+              type="text"
+              name="price"
+              placeholder="e.g. $99"
+              value={form.price}
+              onChange={(e) => {
+                // only allow numbers + dot
+                const value = e.target.value.replace(/[^0-9.]/g, "")
+                setForm({
+                  ...form,
+                  price: value,
+                })
+              }}
+              className="w-full mt-1 border rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-700"
+              required
+            />
             </div>
 
             <div>
