@@ -1,25 +1,35 @@
-import { useEffect, useState } from "react"
-import { FiPercent, FiPlus, FiEdit, FiTag } from "react-icons/fi"
+import { useEffect, useState } from "react";
+import { FiPercent, FiPlus, FiEdit, FiTag } from "react-icons/fi";
 import API from "../api";
-import AddCommissionModal from "./forms/AddCommissionModal"
-import CreatePlanModal from "./forms/CreatePlanModal"
-import GenerateReferralModal from "./forms/GenerateReferralModal"
-import CreateCouponModal from "./forms/CreateCouponModal"
+import AddCommissionModal from "./forms/AddCommissionModal";
+import CreatePlanModal from "./forms/CreatePlanModal";
+import GenerateReferralModal from "./forms/GenerateReferralModal";
+import CreateCouponModal from "./forms/CreateCouponModal";
+
+const currencySymbols = {
+  INR: "₹",
+  USD: "$",
+  AED: "AED ",
+  QAR: "QAR ",
+  BHD: "BHD ",
+  SAR: "SAR ",
+};
 
 const Pricing = () => {
-  const [activeTab, setActiveTab] = useState("subscription")
-  const [showCommissionModal, setShowCommissionModal] = useState(false)
-  const [showCreatePlanModal, setShowCreatePlanModal] = useState(false)
-  const [showReferralModal, setShowReferralModal] = useState(false)
-  const [showCouponModal, setShowCouponModal] = useState(false)
+  const [activeTab, setActiveTab] = useState("subscription");
+  const [showCommissionModal, setShowCommissionModal] = useState(false);
+  const [showCreatePlanModal, setShowCreatePlanModal] = useState(false);
+  const [showReferralModal, setShowReferralModal] = useState(false);
+  const [showCouponModal, setShowCouponModal] = useState(false);
 
-  const [plans, setPlans] = useState([])
-  const [loadingPlans, setLoadingPlans] = useState(false)
+  const [plans, setPlans] = useState([]);
+  const [loadingPlans, setLoadingPlans] = useState(false);
+  const [selectedPlan, setSelectedPlan] = useState(null);
 
   const commissionRates = [
     { rate: "2.5%", effective: "2024-01-01" },
-    { rate: "3%", effective: "2024-04-01" }
-  ]
+    { rate: "3%", effective: "2024-04-01" },
+  ];
 
   const coupons = [
     {
@@ -29,7 +39,7 @@ const Pricing = () => {
       expiry: "2025-12-31",
       used: 23,
       limit: 100,
-      status: "Active"
+      status: "Active",
     },
     {
       code: "START50",
@@ -38,7 +48,7 @@ const Pricing = () => {
       expiry: "2025-10-01",
       used: 10,
       limit: 50,
-      status: "Active"
+      status: "Active",
     },
     {
       code: "REFERRAL20",
@@ -47,54 +57,72 @@ const Pricing = () => {
       expiry: "2025-08-01",
       used: 0,
       limit: 30,
-      status: "Inactive"
-    }
-  ]
+      status: "Inactive",
+    },
+  ];
 
   const fetchPlans = async () => {
     try {
-      setLoadingPlans(true)
-      const res = await API.get("/subscriptions")
+      setLoadingPlans(true);
+      const res = await API.get("/subscriptions");
 
       if (res.data.success) {
-        setPlans(res.data.data)
+        setPlans(res.data.data || []);
+      } else {
+        setPlans([]);
       }
     } catch (error) {
-      console.error("FETCH PLANS ERROR:", error)
+      console.error("FETCH PLANS ERROR:", error);
+      setPlans([]);
     } finally {
-      setLoadingPlans(false)
+      setLoadingPlans(false);
     }
-  }
+  };
 
   useEffect(() => {
-    fetchPlans()
-  }, [])
+    fetchPlans();
+  }, []);
 
   const handleTogglePlan = async (plan) => {
     try {
-      const newEnabledValue = plan.enabled === 1 ? 0 : 1
+      const newEnabledValue = Number(plan.enabled) === 1 ? 0 : 1;
 
       const res = await API.patch(`/subscriptions/${plan.id}/toggle`, {
-        enabled: newEnabledValue
-      })
+        enabled: newEnabledValue,
+      });
 
       if (res.data.success) {
-        fetchPlans()
+        fetchPlans();
       } else {
-        alert("Failed to update plan")
+        alert("Failed to update plan");
       }
     } catch (error) {
-      console.error("TOGGLE PLAN ERROR:", error)
-      alert("Failed to update plan")
+      console.error("TOGGLE PLAN ERROR:", error);
+      alert("Failed to update plan");
     }
-  }
+  };
+
+  const handleEditPlan = (plan) => {
+    setSelectedPlan(plan);
+    setShowCreatePlanModal(true);
+  };
+
+  const handleAddPlan = () => {
+    setSelectedPlan(null);
+    setShowCreatePlanModal(true);
+  };
 
   const statusBadge = (status) =>
     status === "Active"
       ? "bg-primary text-white"
-      : "bg-gray-200 text-gray-700"
+      : "bg-gray-200 text-gray-700";
 
-  const topPlans = plans.filter((plan) => plan.enabled === 1).slice(0, 3)
+  const formatPrice = (plan) => {
+    const symbol = currencySymbols[plan.currency] || "$";
+    return `${symbol}${plan.price}`;
+  };
+
+  const topPlans = plans.filter((plan) => Number(plan.enabled) === 1).slice(0, 3);
 
   return (
     <div className="space-y-6">
@@ -117,7 +145,7 @@ const Pricing = () => {
           </button>
 
           <button
-            onClick={() => setShowCreatePlanModal(true)}
+            onClick={handleAddPlan}
             className="flex items-center gap-2 px-4 py-2 rounded-lg bg-primary text-white hover:opacity-90 text-sm"
           >
             <FiPlus /> New Plan
@@ -131,9 +159,7 @@ const Pricing = () => {
             key={tab}
             onClick={() => setActiveTab(tab)}
             className={`px-4 py-2 rounded-md text-sm whitespace-nowrap ${
-              activeTab === tab
-                ? "bg-white shadow text-primary"
-                : "text-gray-500"
+              activeTab === tab ? "bg-white shadow text-primary" : "text-gray-500"
             }`}
           >
             {tab === "subscription"
@@ -155,7 +181,10 @@ const Pricing = () => {
             <>
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
                 {topPlans.map((plan) => (
-                  <div key={plan.id} className="bg-white p-6 rounded-xl shadow-sm border relative">
+                  <div
+                    key={plan.id}
+                    className="bg-white p-6 rounded-xl shadow-sm border relative"
+                  >
                     <span className="absolute top-4 right-4 px-3 py-1 text-xs rounded-full bg-primary text-white">
                       {plan.status}
                     </span>
@@ -163,15 +192,20 @@ const Pricing = () => {
                     <h2 className="text-lg font-semibold mb-2">{plan.name}</h2>
 
                     <p className="text-3xl font-bold text-green-600">
-                      ${plan.price}
+                      {formatPrice(plan)}
                       <span className="text-sm text-gray-500 font-normal">
-                        /{plan.billing === "Yearly" ? "year" : "month"}
+                        /{plan.billing === "Yearly" ? "year" : plan.billing === "Monthly" ? "month" : plan.billing}
                       </span>
                     </p>
 
-                    <p className="text-gray-500 mt-3 text-sm">
-                      {plan.features}
-                    </p>
+                    {Number(plan.discount || 0) > 0 && (
+                      <p className="mt-2 text-sm text-orange-600 font-medium">
+                        Discount: {plan.discount}
+                        {plan.currency === "INR" || plan.currency === "USD" ? "%" : ""}
+                      </p>
+                    )}
+
+                    <p className="text-gray-500 mt-3 text-sm">{plan.features}</p>
                   </div>
                 ))}
               </div>
@@ -185,10 +219,11 @@ const Pricing = () => {
                         <th className="p-4 text-left">Price</th>
                         <th className="p-4 text-left">Billing</th>
                         <th className="p-4 text-left">Duration</th>
+                        <th className="p-4 text-left">Discount</th>
                         <th className="p-4 text-left">Features</th>
                         <th className="p-4 text-left">Status</th>
                         <th className="p-4 text-left">Active</th>
-                        <th className="p-4"></th>
+                        <th className="p-4 text-left">Edit</th>
                       </tr>
                     </thead>
 
@@ -197,13 +232,20 @@ const Pricing = () => {
                         plans.map((plan) => (
                           <tr key={plan.id} className="border-t hover:bg-gray-50">
                             <td className="p-4 font-medium">{plan.name}</td>
-                            <td className="p-4">${plan.price}</td>
+                            <td className="p-4">{formatPrice(plan)}</td>
                             <td className="p-4">{plan.billing}</td>
                             <td className="p-4">{plan.duration}</td>
+                            <td className="p-4">
+                              {Number(plan.discount || 0) > 0 ? plan.discount : "-"}
+                            </td>
                             <td className="p-4 text-gray-600">{plan.features}</td>
 
                             <td className="p-4">
-                              <span className={`px-3 py-1 rounded-full text-xs ${statusBadge(plan.status)}`}>
+                              <span
+                                className={`px-3 py-1 rounded-full text-xs ${statusBadge(
+                                  plan.status
+                                )}`}
+                              >
                                 {plan.status}
                               </span>
                             </td>
@@ -212,7 +254,9 @@ const Pricing = () => {
                               <div
                                 onClick={() => handleTogglePlan(plan)}
                                 className={`w-12 h-6 flex items-center rounded-full p-1 cursor-pointer ${
-                                  Number(plan.enabled) === 1 ? "bg-primary" : "bg-gray-300"
+                                  Number(plan.enabled) === 1
+                                    ? "bg-primary"
+                                    : "bg-gray-300"
                                 }`}
                               >
                                 <div
@@ -223,14 +267,18 @@ const Pricing = () => {
                               </div>
                             </td>
 
-                            <td className="p-4 text-gray-500 cursor-pointer">
+                            <td
+                              className="p-4 text-gray-500 cursor-pointer"
+                              onClick={() => handleEditPlan(plan)}
+                              title="Edit plan"
+                            >
                               <FiEdit />
                             </td>
                           </tr>
                         ))
                       ) : (
                         <tr>
-                          <td colSpan="8" className="p-6 text-center text-gray-500">
+                          <td colSpan="9" className="p-6 text-center text-gray-500">
                             No subscription plans found
                           </td>
                         </tr>
@@ -246,9 +294,7 @@ const Pricing = () => {
 
       {activeTab === "commission" && (
         <div className="bg-white p-6 rounded-xl shadow-sm w-full md:w-[600px]">
-          <h2 className="text-lg font-semibold mb-2">
-            Platform Commission Rate
-          </h2>
+          <h2 className="text-lg font-semibold mb-2">Platform Commission Rate</h2>
 
           <p className="text-gray-500 mb-4 text-sm">
             Commission percentage applied to all transactions on the platform.
@@ -327,28 +373,18 @@ const Pricing = () => {
                         {coupon.code}
                       </td>
 
-                      <td className="p-4 text-gray-600">
-                        {coupon.type}
-                      </td>
-
-                      <td className="p-4 font-medium">
-                        {coupon.value}
-                      </td>
-
-                      <td className="p-4 text-gray-600">
-                        {coupon.expiry}
-                      </td>
+                      <td className="p-4 text-gray-600">{coupon.type}</td>
+                      <td className="p-4 font-medium">{coupon.value}</td>
+                      <td className="p-4 text-gray-600">{coupon.expiry}</td>
+                      <td className="p-4">{coupon.used}</td>
+                      <td className="p-4">{coupon.limit}</td>
 
                       <td className="p-4">
-                        {coupon.used}
-                      </td>
-
-                      <td className="p-4">
-                        {coupon.limit}
-                      </td>
-
-                      <td className="p-4">
-                        <span className={`px-3 py-1 rounded-full text-xs ${statusBadge(coupon.status)}`}>
+                        <span
+                          className={`px-3 py-1 rounded-full text-xs ${statusBadge(
+                            coupon.status
+                          )}`}
+                        >
                           {coupon.status}
                         </span>
                       </td>
@@ -371,8 +407,12 @@ const Pricing = () => {
 
       {showCreatePlanModal && (
         <CreatePlanModal
-          close={() => setShowCreatePlanModal(false)}
+          close={() => {
+            setShowCreatePlanModal(false);
+            setSelectedPlan(null);
+          }}
           refreshPlans={fetchPlans}
+          editPlan={selectedPlan}
         />
       )}
 
@@ -384,443 +424,7 @@ const Pricing = () => {
         <CreateCouponModal close={() => setShowCouponModal(false)} />
       )}
     </div>
-  )
-}
+  );
+};
 
-export default Pricing
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-// import { useState } from "react"
-// import { FiPercent, FiPlus, FiEdit, FiTag } from "react-icons/fi"
-// import AddCommissionModal from "./forms/AddCommissionModal" // NEW
-// import CreatePlanModal from "./forms/CreatePlanModal"
-// import GenerateReferralModal from "./forms/GenerateReferralModal"
-// import CreateCouponModal from "./forms/CreateCouponModal"
-// const Pricing = () => {
-
-//   const [activeTab, setActiveTab] = useState("subscription")
-//   const [showCommissionModal, setShowCommissionModal] = useState(false) // NEW
-//   const [showCreatePlanModal, setShowCreatePlanModal] = useState(false)
-//   const [showReferralModal, setShowReferralModal] = useState(false)
-//   const [showCouponModal, setShowCouponModal] = useState(false)
-  
-//   const plans = [
-//     {
-//       name: "Basic Plan",
-//       price: "$49",
-//       duration: "30 days",
-//       features: "Up to 5 users, 10 tenders/month, Email support",
-//       status: "Active",
-//       enabled: true
-//     },
-//     {
-//       name: "Premium Plan",
-//       price: "$99",
-//       duration: "30 days",
-//       features: "Up to 25 users, Unlimited tenders, Priority support, Analytics",
-//       status: "Active",
-//       enabled: true
-//     },
-//     {
-//       name: "Enterprise Plan",
-//       price: "$299",
-//       duration: "30 days",
-//       features: "Unlimited users, Unlimited tenders, Dedicated support, Custom workflows",
-//       status: "Active",
-//       enabled: true
-//     },
-//     {
-//       name: "Annual Basic",
-//       price: "$490",
-//       duration: "365 days",
-//       features: "Basic plan features, billed annually (2 months free)",
-//       status: "Active",
-//       enabled: true
-//     },
-//     {
-//       name: "Trial Plan",
-//       price: "$0",
-//       duration: "14 days",
-//       features: "Full access for 14 days, No credit card required",
-//       status: "Inactive",
-//       enabled: false
-//     }
-//   ]
-
-//   const commissionRates = [
-//     { rate: "2.5%", effective: "2024-01-01" },
-//     { rate: "3%", effective: "2024-04-01" }
-//   ]
-
-//   const coupons = [
-//     {
-//       code: "WELCOME10",
-//       type: "Percentage",
-//       value: "10%",
-//       expiry: "2025-12-31",
-//       used: 23,
-//       limit: 100,
-//       status: "Active"
-//     },
-//     {
-//       code: "START50",
-//       type: "Fixed",
-//       value: "$50",
-//       expiry: "2025-10-01",
-//       used: 10,
-//       limit: 50,
-//       status: "Active"
-//     },
-//     {
-//       code: "REFERRAL20",
-//       type: "Percentage",
-//       value: "20%",
-//       expiry: "2025-08-01",
-//       used: 0,
-//       limit: 30,
-//       status: "Inactive"
-//     }
-//   ]
-
-//   const statusBadge = (status) =>
-//     status === "Active"
-//       ? "bg-primary text-white"
-//       : "bg-gray-200 text-gray-700"
-
-//   return (
-//     <div className="space-y-6">
-
-//       {/* HEADER */}
-//       <div className="flex flex-col md:flex-row md:justify-between md:items-center gap-4">
-
-//         <div>
-//           <h1 className="text-xl md:text-2xl font-bold text-primary">
-//             Pricing & Subscriptions
-//           </h1>
-//           <p className="text-gray-500 text-sm md:text-base">
-//             Manage subscription plans, pricing, and platform commission settings
-//           </p>
-//         </div>
-
-//         <div className="flex flex-wrap gap-3">
-
-//           <button
-//             onClick={() => setShowCommissionModal(true)} // NEW
-//             className="flex items-center gap-2 px-4 py-2 rounded-lg border bg-white hover:bg-gray-50 text-sm"
-//           >
-//             <FiPercent /> Commission Settings
-//           </button>
-
-//           <button 
-//             onClick={() => setShowCreatePlanModal(true)}
-//             className="flex items-center gap-2 px-4 py-2 rounded-lg bg-primary text-white hover:opacity-90 text-sm">
-//             <FiPlus /> New Plan
-//           </button>
-
-//         </div>
-//       </div>
-
-//       {/* TABS */}
-//       <div className="flex flex-wrap gap-2 bg-gray-100 p-1 rounded-lg w-fit">
-
-//         {["subscription", "commission", "coupons"].map(tab => (
-//           <button
-//             key={tab}
-//             onClick={() => setActiveTab(tab)}
-//             className={`px-4 py-2 rounded-md text-sm whitespace-nowrap ${
-//               activeTab === tab
-//                 ? "bg-white shadow text-primary"
-//                 : "text-gray-500"
-//             }`}
-//           >
-//             {tab === "subscription"
-//               ? "Subscription Plans"
-//               : tab === "commission"
-//               ? "Commission Settings"
-//               : "Coupons"}
-//           </button>
-//         ))}
-
-//       </div>
-
-//       {/* ================= SUBSCRIPTION TAB ================= */}
-//       {activeTab === "subscription" && (
-//         <>
-
-//           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-
-//             {plans.slice(0,3).map((plan,i)=>(
-//               <div key={i} className="bg-white p-6 rounded-xl shadow-sm border relative">
-
-//                 <span className="absolute top-4 right-4 px-3 py-1 text-xs rounded-full bg-primary text-white">
-//                   {plan.status}
-//                 </span>
-
-//                 <h2 className="text-lg font-semibold mb-2">{plan.name}</h2>
-
-//                 <p className="text-3xl font-bold text-green-600">
-//                   {plan.price}
-//                   <span className="text-sm text-gray-500 font-normal">/month</span>
-//                 </p>
-
-//                 <p className="text-gray-500 mt-3 text-sm">
-//                   {plan.features}
-//                 </p>
-
-//               </div>
-//             ))}
-
-//           </div>
-
-//           <div className="bg-white rounded-xl shadow-sm overflow-hidden">
-//             <div className="overflow-x-auto">
-
-//               <table className="min-w-full">
-
-//                 <thead className="bg-gray-50 text-gray-600 text-sm">
-//                   <tr>
-//                     <th className="p-4 text-left">Plan Name</th>
-//                     <th className="p-4 text-left">Price</th>
-//                     <th className="p-4 text-left">Duration</th>
-//                     <th className="p-4 text-left">Features</th>
-//                     <th className="p-4 text-left">Status</th>
-//                     <th className="p-4 text-left">Active</th>
-//                     <th className="p-4"></th>
-//                   </tr>
-//                 </thead>
-
-//                 <tbody>
-
-//                   {plans.map((plan,i)=>(
-//                     <tr key={i} className="border-t hover:bg-gray-50">
-
-//                       <td className="p-4 font-medium">{plan.name}</td>
-//                       <td className="p-4">{plan.price}</td>
-//                       <td className="p-4">{plan.duration}</td>
-//                       <td className="p-4 text-gray-600">{plan.features}</td>
-
-//                       <td className="p-4">
-//                         <span className={`px-3 py-1 rounded-full text-xs ${statusBadge(plan.status)}`}>
-//                           {plan.status}
-//                         </span>
-//                       </td>
-
-//                       <td className="p-4">
-//                         <div className={`w-12 h-6 flex items-center rounded-full p-1 cursor-pointer ${
-//                           plan.enabled ? "bg-primary" : "bg-gray-300"
-//                         }`}>
-//                           <div className={`bg-white w-4 h-4 rounded-full shadow-md transform duration-300 ${
-//                             plan.enabled ? "translate-x-6" : ""
-//                           }`} />
-//                         </div>
-//                       </td>
-
-//                       <td className="p-4 text-gray-500 cursor-pointer">
-//                         <FiEdit />
-//                       </td>
-
-//                     </tr>
-//                   ))}
-
-//                 </tbody>
-
-//               </table>
-
-//             </div>
-//           </div>
-
-//         </>
-//       )}
-
-//       {/* ================= COMMISSION TAB ================= */}
-//       {activeTab === "commission" && (
-
-//         <div className="bg-white p-6 rounded-xl shadow-sm w-full md:w-[600px]">
-
-//           <h2 className="text-lg font-semibold mb-2">
-//             Platform Commission Rate
-//           </h2>
-
-//           <p className="text-gray-500 mb-4 text-sm">
-//             Commission percentage applied to all transactions on the platform.
-//           </p>
-
-//           <div className="overflow-x-auto">
-
-//             <table className="min-w-full">
-
-//               <thead className="bg-gray-50 text-gray-600 text-sm">
-//                 <tr>
-//                   <th className="p-4 text-left">Commission %</th>
-//                   <th className="p-4 text-left">Effective From</th>
-//                 </tr>
-//               </thead>
-
-//               <tbody>
-
-//                 {commissionRates.map((c,i)=>(
-//                   <tr key={i} className="border-t">
-//                     <td className="p-4 font-medium">{c.rate}</td>
-//                     <td className="p-4 text-gray-600">{c.effective}</td>
-//                   </tr>
-//                 ))}
-
-//               </tbody>
-
-//             </table>
-
-//           </div>
-
-//         </div>
-
-//       )}
-
-//       {/* ================= COUPONS TAB ================= */}
-//       {activeTab === "coupons" && (
-
-//         <>
-
-//           <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3">
-
-//             <div>
-//               <h2 className="text-lg font-semibold">Coupon Codes</h2>
-//               <p className="text-gray-500 text-sm">
-//                 Create and manage discount coupons for subscriptions.
-//               </p>
-//             </div>
-
-//             <div className="flex gap-2 flex-wrap">
-
-//               <button
-//                 onClick={() => setShowReferralModal(true)}
-//                 className="flex items-center gap-2 px-4 py-2 rounded-lg border bg-white hover:bg-gray-50 text-sm">
-//                 <FiTag /> Generate Referral
-//               </button>
-
-//               <button 
-//                 onClick={() => setShowCouponModal(true)}
-//                 className="flex items-center gap-2 px-4 py-2 rounded-lg bg-primary text-white hover:opacity-90 text-sm">
-//                 <FiPlus /> Create Coupon
-//               </button>
-
-//             </div>
-
-//           </div>
-
-//           <div className="bg-white rounded-xl shadow-sm overflow-hidden mt-4">
-
-//             <div className="overflow-x-auto">
-
-//               <table className="min-w-full">
-
-//                 <thead className="bg-gray-50 text-gray-600 text-sm">
-//                   <tr>
-//                     <th className="p-4 text-left">Code</th>
-//                     <th className="p-4 text-left">Type</th>
-//                     <th className="p-4 text-left">Discount</th>
-//                     <th className="p-4 text-left">Expiry</th>
-//                     <th className="p-4 text-left">Used</th>
-//                     <th className="p-4 text-left">Limit</th>
-//                     <th className="p-4 text-left">Status</th>
-//                     <th className="p-4"></th>
-//                   </tr>
-//                 </thead>
-
-//                 <tbody>
-
-//                   {coupons.map((coupon,i)=>(
-//                     <tr key={i} className="border-t hover:bg-gray-50">
-
-//                       <td className="p-4 font-medium flex items-center gap-2">
-//                         <FiTag className="text-gray-400"/>
-//                         {coupon.code}
-//                       </td>
-
-//                       <td className="p-4 text-gray-600">
-//                         {coupon.type}
-//                       </td>
-
-//                       <td className="p-4 font-medium">
-//                         {coupon.value}
-//                       </td>
-
-//                       <td className="p-4 text-gray-600">
-//                         {coupon.expiry}
-//                       </td>
-
-//                       <td className="p-4">
-//                         {coupon.used}
-//                       </td>
-
-//                       <td className="p-4">
-//                         {coupon.limit}
-//                       </td>
-
-//                       <td className="p-4">
-//                         <span className={`px-3 py-1 rounded-full text-xs ${statusBadge(coupon.status)}`}>
-//                           {coupon.status}
-//                         </span>
-//                       </td>
-
-//                       <td className="p-4 text-gray-500 cursor-pointer">
-//                         <FiEdit />
-//                       </td>
-
-//                     </tr>
-//                   ))}
-
-//                 </tbody>
-
-//               </table>
-
-//             </div>
-
-//           </div>
-
-//         </>
-
-//       )}
-
-//       {showCommissionModal && (
-//         <AddCommissionModal
-//           close={() => setShowCommissionModal(false)}
-//         />
-//       )}
-
-//       {showCreatePlanModal && (
-//   <CreatePlanModal
-//     close={() => setShowCreatePlanModal(false)}
-//   />
-// )}
-
-//     {showReferralModal && (
-//   <GenerateReferralModal
-//     close={() => setShowReferralModal(false)}
-//   />
-// )}
-
-//       {showCouponModal && (
-//   <CreateCouponModal
-//     close={() => setShowCouponModal(false)}
-//   />
-// )}
-
-//     </div>
-//   )
-// }
-
-// export default Pricing
+export default Pricing;
