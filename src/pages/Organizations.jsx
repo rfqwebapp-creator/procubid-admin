@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import API from "../api";
 import AddOrganizationModal from "./forms/AddOrganizationModal";
 import { useNavigate } from "react-router-dom";
+import { Eye } from "lucide-react";
 
 const Organizations = () => {
   const [search, setSearch] = useState("");
@@ -116,13 +117,13 @@ const Organizations = () => {
             <tbody>
               {loading ? (
                 <tr>
-                  <td colSpan="6" className="p-4 text-center text-gray-500">
+                  <td colSpan="7" className="p-4 text-center text-gray-500">
                     Loading organizations...
                   </td>
                 </tr>
               ) : filteredOrganizations.length === 0 ? (
                 <tr>
-                  <td colSpan="6" className="p-4 text-center text-gray-500">
+                  <td colSpan="7" className="p-4 text-center text-gray-500">
                     No organizations found
                   </td>
                 </tr>
@@ -167,10 +168,12 @@ const Organizations = () => {
 
                         <td className="px-4 py-3">
                     <button
-                      onClick={() => navigate(`/organizations/${item.id}/view`)}
-                      className="px-3 py-1.5 bg-[#486b50] text-white rounded-lg hover:bg-[#3d5b44]"
+                      type="button"
+                      onClick={() => navigate(`/organizations/${org.id}/view`)}
+                      className="w-10 h-10 flex items-center justify-center rounded-lg bg-[#486b50] text-white hover:bg-[#3d5b44] transition"
+                      title="View Details"
                     >
-                      View
+                      <Eye size={18} />
                     </button>
                   </td>
 
