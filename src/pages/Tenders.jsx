@@ -80,7 +80,7 @@ const RFQPage = () => {
                   Buyer
                 </th>
                 <th className="px-6 py-4 text-left text-sm font-semibold text-gray-700">
-                  Classification
+                  Classification / Industry
                 </th>
               </tr>
             </thead>
