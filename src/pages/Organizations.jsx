@@ -1,12 +1,14 @@
 import { useEffect, useState } from "react";
 import API from "../api";
 import AddOrganizationModal from "./forms/AddOrganizationModal";
+import { useNavigate } from "react-router-dom";
 
 const Organizations = () => {
   const [search, setSearch] = useState("");
   const [showModal, setShowModal] = useState(false);
   const [organizations, setOrganizations] = useState([]);
   const [loading, setLoading] = useState(true);
+  const navigate = useNavigate();
 
   const fetchOrganizations = async () => {
     try {
@@ -107,6 +109,7 @@ const Organizations = () => {
                 <th className="p-4">Sector</th>
                 <th className="p-4">Region</th>
                 <th className="p-4">Status</th>
+                <th className="px-4 py-3 text-left">Action</th>   
               </tr>
             </thead>
 
@@ -161,6 +164,16 @@ const Organizations = () => {
                         {org.status}
                       </span>
                     </td>
+
+                        <td className="px-4 py-3">
+                    <button
+                      onClick={() => navigate(`/organizations/${item.id}/view`)}
+                      className="px-3 py-1.5 bg-[#486b50] text-white rounded-lg hover:bg-[#3d5b44]"
+                    >
+                      View
+                    </button>
+                  </td>
+
                   </tr>
                 ))
               )}
