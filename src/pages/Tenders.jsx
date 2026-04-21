@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { Search } from "lucide-react";
-import API from "../../api";
+import API from "../api";
 
 const RFQPage = () => {
   const [searchTerm, setSearchTerm] = useState("");
