@@ -1,13 +1,11 @@
 import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import API from "../api";
+import axios from "axios";
 
 const InfoCard = ({ label, value }) => (
   <div className="bg-white border border-gray-200 rounded-xl p-4">
     <p className="text-sm text-gray-500 mb-1">{label}</p>
-    <p className="text-base font-medium text-gray-800">
-      {value || "-"}
-    </p>
+    <p className="text-base font-medium text-gray-800">{value || "-"}</p>
   </div>
 );
 
@@ -20,7 +18,18 @@ const OrganizationDetails = () => {
   const fetchDetails = async () => {
     try {
       setLoading(true);
-      const res = await API.get(`/organizations/${id}/details`);
+
+      const token = localStorage.getItem("token");
+
+      const res = await axios.get(
+        `https://api.procubid.com/api/organizations/${id}/details`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
       if (res.data.success) {
         setData(res.data.data);
       }
