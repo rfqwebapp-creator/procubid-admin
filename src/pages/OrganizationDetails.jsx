@@ -30,6 +30,10 @@ const OrganizationDetails = () => {
         }
       );
 
+         console.log("FULL RESPONSE:", res);
+    console.log("RESPONSE DATA:", res.data);
+    console.log("RESPONSE DATA.DATA:", res.data.data);
+
       if (res.data.success) {
         setData(res.data.data);
       }
