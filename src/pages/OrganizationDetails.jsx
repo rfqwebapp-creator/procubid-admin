@@ -15,35 +15,32 @@ const OrganizationDetails = () => {
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
 
-  const fetchDetails = async () => {
-    try {
-      setLoading(true);
+const fetchDetails = async () => {
+  try {
+    setLoading(true);
 
-      const token = localStorage.getItem("token");
+    const token = localStorage.getItem("token");
 
-      const res = await axios.get(
-        `https://api.procubid.com/api/organizations/${id}/details`,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
-
-         console.log("FULL RESPONSE:", res);
-    console.log("RESPONSE DATA:", res.data);
-    console.log("RESPONSE DATA.DATA:", res.data.data);
-
-      if (res.data.success) {
-        setData(res.data.data);
+    const res = await axios.get(
+      `https://api.procubid.com/admin/api/organizations/${id}/details`,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
       }
-    } catch (error) {
-      console.error("Error fetching organization details:", error);
-    } finally {
-      setLoading(false);
-    }
-  };
+    );
 
+    console.log("ORG DETAILS RESPONSE:", res.data);
+
+    if (res.data.success) {
+      setData(res.data.data);
+    }
+  } catch (error) {
+    console.error("Error fetching organization details:", error);
+  } finally {
+    setLoading(false);
+  }
+};
   useEffect(() => {
     fetchDetails();
   }, [id]);
