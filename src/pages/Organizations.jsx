@@ -61,7 +61,10 @@ const Organizations = () => {
       });
 
       const newTotalPages = Math.ceil(updatedFiltered.length / itemsPerPage);
-      if (currentPage > newTotalPages && newTotalPages > 0) {
+
+      if (newTotalPages === 0) {
+        setCurrentPage(1);
+      } else if (currentPage > newTotalPages) {
         setCurrentPage(newTotalPages);
       }
 
@@ -114,7 +117,8 @@ const Organizations = () => {
             Organizations
           </h1>
           <p className="text-gray-500 text-sm sm:text-base">
-            Manage all registered organizations — Buyers, Suppliers, and their accounts
+            Manage all registered organizations — Buyers, Suppliers, and their
+            accounts
           </p>
         </div>
 
@@ -127,6 +131,21 @@ const Organizations = () => {
       </div>
 
       <div className="relative w-full sm:w-96 mb-6">
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          className="h-5 w-5 text-gray-400 absolute left-3 top-1/2 -translate-y-1/2"
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke="currentColor"
+          strokeWidth={2}
+        >
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            d="M21 21l-4.35-4.35m1.6-5.15a7 7 0 11-14 0 7 7 0 0114 0z"
+          />
+        </svg>
+
         <input
           type="text"
           placeholder="Search organizations..."
@@ -169,7 +188,10 @@ const Organizations = () => {
                 </tr>
               ) : (
                 paginatedOrganizations.map((org, index) => (
-                  <tr key={org.id || index} className="border-t hover:bg-gray-50 transition">
+                  <tr
+                    key={org.id || index}
+                    className="border-t hover:bg-gray-50 transition"
+                  >
                     <td className="p-4 font-medium whitespace-nowrap">
                       {org.company_name || org.name}
                     </td>
@@ -189,6 +211,7 @@ const Organizations = () => {
                     </td>
 
                     <td className="p-4 whitespace-nowrap">{org.sector}</td>
+
                     <td className="p-4 whitespace-nowrap">{org.region}</td>
 
                     <td className="p-4">
@@ -233,9 +256,10 @@ const Organizations = () => {
         </div>
       </div>
 
-      <div className="flex justify-between items-center mt-4 px-2">
+      <div className="flex flex-col sm:flex-row justify-between items-center gap-3 mt-4 px-2">
         <p className="text-sm text-gray-500">
-          Showing {paginatedOrganizations.length} of {filteredOrganizations.length} organizations
+          Showing {paginatedOrganizations.length} of{" "}
+          {filteredOrganizations.length} organizations
         </p>
 
         <div className="flex items-center gap-2">
@@ -248,11 +272,13 @@ const Organizations = () => {
           </button>
 
           <span className="text-sm font-medium">
-            Page {currentPage} of {totalPages || 1}
+            Page {totalPages === 0 ? 0 : currentPage} of {totalPages || 0}
           </span>
 
           <button
-            onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
+            onClick={() =>
+              setCurrentPage((prev) => Math.min(prev + 1, totalPages || 1))
+            }
             disabled={currentPage === totalPages || totalPages === 0}
             className="px-3 py-1 rounded-md border bg-white text-sm disabled:opacity-50"
           >
@@ -267,6 +293,7 @@ const Organizations = () => {
           onSuccess={() => {
             fetchOrganizations();
             setShowModal(false);
+            setCurrentPage(1);
           }}
         />
       )}
