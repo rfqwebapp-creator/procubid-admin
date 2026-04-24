@@ -18,6 +18,7 @@ import ClientDetails from "./pages/employees/ClientDetails"
 import RFQTracking from "./pages/employees/RFQTracking"
 import EmployeePerformance from "./pages/employees/EmployeePerformance"
 import OrganizationDetails from "./pages/OrganizationDetails";
+import TenderView from "./pages/TenderView";
 
 import ProtectedRoute from "./ProtectedRoute"
 
@@ -54,6 +55,10 @@ function App() {
         <Route path="employees/rfq" element={<RFQTracking />} />
         <Route path="employees/performance" element={<EmployeePerformance />} />
         <Route path="organizations/:id/view" element={<OrganizationDetails />} />
+        
+        <Route path="tenders" element={<Tenders />} />
+        <Route path="tenders/:id" element={<TenderView />} />
+        
 
         <Route path="settings" element={<Settings />} />
       </Route>
