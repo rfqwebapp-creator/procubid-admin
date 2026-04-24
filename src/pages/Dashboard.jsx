@@ -23,7 +23,7 @@ import {
 import StatCard from "../components/dashboard/StatCard";
 import ActivityItem from "../components/dashboard/ActivityItem";
 import AlertCard from "../components/dashboard/AlertCard";
-import api from "../api/api"; // path wrong aanenkil correct cheyyuka
+import API from "../api";
 
 const Dashboard = () => {
   const [stats, setStats] = useState({
@@ -176,7 +176,6 @@ const Dashboard = () => {
 };
 
 export default Dashboard;
-
 
 
 
