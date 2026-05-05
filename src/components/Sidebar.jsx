@@ -15,8 +15,6 @@ import {
 import logo from "../assets/logo.jpg"
 
 const Sidebar = ({ closeSidebar }) => {
-  const [showFeatureLockedModal, setShowFeatureLockedModal] = useState(false)
-
   return (
     <div className="w-64 bg-primary text-white h-screen flex flex-col px-5 py-6 overflow-y-auto">
 
