@@ -32,18 +32,19 @@ const EmployeeDashboard = () => {
 
   return (
 
-    <div className="relative p-6 space-y-8">
+    <div className="relative">
+      <div className={`${showFeatureLockedModal ? "blur-sm" : ""} p-6 space-y-8`}>
 
-      {/* HEADER */}
+        {/* HEADER */}
 
-      <div>
-        <h1 className="text-3xl font-bold text-gray-800">
-          Employee Dashboard
-        </h1>
-        <p className="text-gray-500">
-          Team overview & quick navigation
-        </p>
-      </div>
+        <div>
+          <h1 className="text-3xl font-bold text-gray-800">
+            Employee Dashboard
+          </h1>
+          <p className="text-gray-500">
+            Team overview & quick navigation
+          </p>
+        </div>
 
       {/* STAT CARDS */}
 
@@ -248,8 +249,8 @@ const EmployeeDashboard = () => {
       </div>
 
       {showFeatureLockedModal && (
-        <div className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50 px-4">
-          <div className="bg-white rounded-3xl p-6 max-w-md w-full shadow-2xl">
+        <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50 px-4">
+          <div className="relative z-50 bg-white rounded-3xl p-6 max-w-md w-full shadow-2xl">
             <div className="flex items-center gap-2 mb-4">
               <h2 className="text-xl font-semibold text-gray-900">Feature Locked</h2>
               <span className="text-2xl">🔒</span>
