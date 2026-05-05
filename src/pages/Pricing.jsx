@@ -21,6 +21,7 @@ const Pricing = () => {
   const [showCreatePlanModal, setShowCreatePlanModal] = useState(false);
   const [showReferralModal, setShowReferralModal] = useState(false);
   const [showCouponModal, setShowCouponModal] = useState(false);
+  const [showFeatureLockedModal, setShowFeatureLockedModal] = useState(false);
 
   const [plans, setPlans] = useState([]);
   const [loadingPlans, setLoadingPlans] = useState(false);
@@ -157,7 +158,13 @@ const Pricing = () => {
         {["subscription", "commission", "coupons"].map((tab) => (
           <button
             key={tab}
-            onClick={() => setActiveTab(tab)}
+            onClick={() => {
+              if (tab === "commission") {
+                setShowFeatureLockedModal(true);
+              } else {
+                setActiveTab(tab);
+              }
+            }}
             className={`px-4 py-2 rounded-md text-sm whitespace-nowrap ${
               activeTab === tab ? "bg-white shadow text-primary" : "text-gray-500"
             }`}
@@ -422,6 +429,43 @@ const Pricing = () => {
 
       {showCouponModal && (
         <CreateCouponModal close={() => setShowCouponModal(false)} />
+      )}
+
+      {showFeatureLockedModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-lg p-6 max-w-sm mx-4">
+            <h2 className="text-xl font-semibold text-gray-800 mb-2 flex items-center gap-2">
+              Feature Locked <span className="text-2xl">🔒</span>
+            </h2>
+
+            <p className="text-gray-600 mb-6">
+              Kindly mail us to{" "}
+              <a
+                href="mailto:hello@procubid.com"
+                className="text-blue-600 hover:underline font-medium"
+              >
+                hello@procubid.com
+              </a>{" "}
+              to activate this segment/feature.
+            </p>
+
+            <div className="flex gap-3 justify-end">
+              <button
+                onClick={() => setShowFeatureLockedModal(false)}
+                className="px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 text-sm"
+              >
+                Cancel
+              </button>
+
+              <a
+                href="mailto:hello@procubid.com"
+                className="px-4 py-2 bg-green-700 text-white rounded-lg hover:bg-green-800 text-sm"
+              >
+                Mail Now
+              </a>
+            </div>
+          </div>
+        </div>
       )}
     </div>
   );
