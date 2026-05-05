@@ -1,4 +1,5 @@
 import { Link } from "react-router-dom"
+import { useEffect, useState } from "react"
 import {
   Users,
   DollarSign,
@@ -11,6 +12,11 @@ import {
 } from "lucide-react"
 
 const EmployeeDashboard = () => {
+  const [showFeatureLockedModal, setShowFeatureLockedModal] = useState(false)
+
+  useEffect(() => {
+    setShowFeatureLockedModal(true)
+  }, [])
 
   const performers = [
     { name: "Abijith Anil", role: "Sales Director", revenue: "₹5,00,000", rating: "4.9" },
@@ -244,6 +250,42 @@ const EmployeeDashboard = () => {
         </div>
 
       </div>
+
+      {showFeatureLockedModal && (
+        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 px-4">
+          <div className="bg-white rounded-3xl p-6 max-w-md w-full shadow-2xl">
+            <div className="flex items-center gap-2 mb-4">
+              <h2 className="text-xl font-semibold text-gray-900">Feature Locked</h2>
+              <span className="text-2xl">🔒</span>
+            </div>
+            <p className="text-gray-600 mb-6">
+              Kindly mail us to
+              <a
+                href="mailto:hello@procubid.com"
+                className="text-blue-600 hover:underline font-medium"
+              >
+                hello@procubid.com
+              </a>
+              to activate this segment/feature.
+            </p>
+            <div className="flex justify-end gap-3">
+              <button
+                type="button"
+                onClick={() => setShowFeatureLockedModal(false)}
+                className="px-4 py-2 rounded-lg border border-gray-300 text-gray-700 hover:bg-gray-50"
+              >
+                Cancel
+              </button>
+              <a
+                href="mailto:hello@procubid.com"
+                className="px-4 py-2 rounded-lg bg-green-700 text-white hover:bg-green-800"
+              >
+                Mail Now
+              </a>
+            </div>
+          </div>
+        </div>
+      )}
 
     </div>
   )
