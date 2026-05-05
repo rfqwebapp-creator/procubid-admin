@@ -32,7 +32,7 @@ const EmployeeDashboard = () => {
 
   return (
 
-    <div className="p-6 space-y-8">
+    <div className={`relative p-6 space-y-8 ${showFeatureLockedModal ? "blur-sm" : ""}`}>
 
       {/* HEADER */}
 
@@ -248,7 +248,7 @@ const EmployeeDashboard = () => {
       </div>
 
       {showFeatureLockedModal && (
-        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 px-4">
+        <div className="absolute inset-0 bg-black/30 flex items-center justify-center z-50 px-4">
           <div className="bg-white rounded-3xl p-6 max-w-md w-full shadow-2xl">
             <div className="flex items-center gap-2 mb-4">
               <h2 className="text-xl font-semibold text-gray-900">Feature Locked</h2>
