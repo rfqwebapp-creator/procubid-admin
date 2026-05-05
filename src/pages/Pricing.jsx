@@ -22,6 +22,7 @@ const Pricing = () => {
   const [showReferralModal, setShowReferralModal] = useState(false);
   const [showCouponModal, setShowCouponModal] = useState(false);
   const [showFeatureLockedModal, setShowFeatureLockedModal] = useState(false);
+  const [lockedTab, setLockedTab] = useState(null);
 
   const [plans, setPlans] = useState([]);
   const [loadingPlans, setLoadingPlans] = useState(false);
@@ -159,7 +160,8 @@ const Pricing = () => {
           <button
             key={tab}
             onClick={() => {
-              if (tab === "commission") {
+              if (tab === "commission" || tab === "coupons") {
+                setLockedTab(tab);
                 setShowFeatureLockedModal(true);
               } else {
                 setActiveTab(tab);
@@ -432,7 +434,7 @@ const Pricing = () => {
       )}
 
       {showFeatureLockedModal && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+        <div className="fixed inset-0 bg-black bg-opacity-50 backdrop-blur-sm flex items-center justify-center z-50">
           <div className="bg-white rounded-lg p-6 max-w-sm mx-4">
             <h2 className="text-xl font-semibold text-gray-800 mb-2 flex items-center gap-2">
               Feature Locked <span className="text-2xl">🔒</span>
