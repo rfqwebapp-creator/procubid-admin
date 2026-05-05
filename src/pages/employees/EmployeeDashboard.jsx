@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom"
-import { useEffect, useState } from "react"
+import { useState } from "react"
 import {
   Users,
   DollarSign,
@@ -12,11 +12,7 @@ import {
 } from "lucide-react"
 
 const EmployeeDashboard = () => {
-  const [showFeatureLockedModal, setShowFeatureLockedModal] = useState(false)
-
-  useEffect(() => {
-    setShowFeatureLockedModal(true)
-  }, [])
+  const [showFeatureLockedModal, setShowFeatureLockedModal] = useState(true)
 
   const performers = [
     { name: "Abijith Anil", role: "Sales Director", revenue: "₹5,00,000", rating: "4.9" },
