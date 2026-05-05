@@ -1,4 +1,4 @@
-import { Link } from "react-router-dom"
+import { Link, useNavigate } from "react-router-dom"
 import { useState } from "react"
 import {
   Users,
@@ -13,6 +13,7 @@ import {
 
 const EmployeeDashboard = () => {
   const [showFeatureLockedModal, setShowFeatureLockedModal] = useState(true)
+  const navigate = useNavigate()
 
   const performers = [
     { name: "Abijith Anil", role: "Sales Director", revenue: "₹5,00,000", rating: "4.9" },
@@ -268,7 +269,7 @@ const EmployeeDashboard = () => {
             <div className="flex justify-end gap-3">
               <button
                 type="button"
-                onClick={() => setShowFeatureLockedModal(false)}
+                onClick={() => navigate('/dashboard')}
                 className="px-4 py-2 rounded-lg border border-gray-300 text-gray-700 hover:bg-gray-50"
               >
                 Cancel
