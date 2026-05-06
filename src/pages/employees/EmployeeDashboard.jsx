@@ -29,9 +29,7 @@ const EmployeeDashboard = () => {
   ]
 
   return (
-
-    <div className="relative">
-      <div className="p-6 space-y-8">
+    <div className="p-6 space-y-8">
 
         {/* HEADER */}
 
@@ -231,7 +229,7 @@ const EmployeeDashboard = () => {
 
                   <div
                     className="bg-green-600 h-2 rounded"
-                    style={{ width: `${s.percent}%` }}
+                    style={{ width: s.percent + '%' }}
                   ></div>
 
                 </div>
